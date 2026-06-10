@@ -13,10 +13,27 @@ const IMPERIAL = "#124061";
 const CERULEAN = "#2E6EB7";
 
 function shell(title: string, body: string) {
-  return `
-  <div style="font-family:Helvetica,Arial,sans-serif;background:#F7F9FB;padding:32px 16px;">
-    <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e9ef;">
-      <div style="background:${IMPERIAL};padding:20px 28px;">
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <style>
+    body { margin:0; padding:0; -webkit-text-size-adjust:100%; }
+    @media only screen and (max-width: 600px) {
+      .outer { padding: 12px 8px !important; }
+      .card { border-radius: 10px !important; }
+      .header, .content, .footer { padding-left: 18px !important; padding-right: 18px !important; }
+      .content { padding-top: 22px !important; padding-bottom: 22px !important; }
+      .cta { display: block !important; text-align: center !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#F7F9FB;">
+  <div class="outer" style="font-family:Helvetica,Arial,sans-serif;background:#F7F9FB;padding:32px 16px;">
+    <div class="card" style="width:100%;max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e9ef;">
+      <div class="header" style="background:${IMPERIAL};padding:20px 28px;">
         <table style="border-collapse:collapse;"><tr>
           <td style="padding-right:12px;vertical-align:middle;">
             <img src="${APP_URL}/mariners-m-header.png" width="36" height="36" alt="Mariners Church" style="display:block;border:0;" />
@@ -28,21 +45,23 @@ function shell(title: string, body: string) {
         </tr></table>
       </div>
       <div style="height:3px;background:${CERULEAN};"></div>
-      <div style="padding:28px;">
-        <h1 style="margin:0 0 16px;font-size:18px;color:${IMPERIAL};">${title}</h1>
+      <div class="content" style="padding:28px;">
+        <h1 style="margin:0 0 16px;font-size:18px;line-height:1.35;color:${IMPERIAL};">${title}</h1>
         ${body}
       </div>
-      <div style="padding:16px 28px;border-top:1px solid #eef1f5;">
-        <p style="margin:0;font-size:11px;color:#9aa5b1;">Harbor · Space requests &amp; event scheduling · Mariners Church</p>
+      <div class="footer" style="padding:16px 28px;border-top:1px solid #eef1f5;">
+        <p style="margin:0;font-size:11px;line-height:1.5;color:#9aa5b1;">Harbor · Space requests &amp; event scheduling · Mariners Church</p>
       </div>
     </div>
-  </div>`;
+  </div>
+</body>
+</html>`;
 }
 
 function row(label: string, value: string) {
   return `<tr>
-    <td style="padding:6px 12px 6px 0;font-size:12px;color:#7a8694;text-transform:uppercase;letter-spacing:1px;vertical-align:top;white-space:nowrap;">${label}</td>
-    <td style="padding:6px 0;font-size:14px;color:#1E1C1D;">${value}</td>
+    <td style="padding:6px 12px 6px 0;font-size:12px;color:#7a8694;text-transform:uppercase;letter-spacing:1px;vertical-align:top;">${label}</td>
+    <td style="padding:6px 0;font-size:14px;line-height:1.5;color:#1E1C1D;">${value}</td>
   </tr>`;
 }
 
@@ -84,7 +103,7 @@ export async function sendDecisionEmail(a: DecisionEmailArgs) {
       ${row("When", a.whenLabel)}
       ${row("Applies to", a.scopeLabel)}
     </table>
-    <a href="${APP_URL}/events/${a.eventId}"
+    <a class="cta" href="${APP_URL}/events/${a.eventId}"
        style="display:inline-block;background:${approved ? CERULEAN : IMPERIAL};color:#fff;text-decoration:none;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;">
       View event
     </a>

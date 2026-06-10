@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.32";
+export const CURRENT_VERSION = "1.5";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -57,17 +57,18 @@ export const CHANGELOG: VersionEntry[] = [
     ],
   },
   {
-    version: "1.31",
+    version: "1.4",
     date: "June 10, 2026",
     changes: [
       { type: "improvement", text: "Notification emails now use the Mariners circle-M logo in the header" },
+      { type: "fix", text: "Email header logo blends seamlessly with the blue header (no dark box behind it)" },
     ],
   },
   {
-    version: "1.32",
+    version: "1.5",
     date: "June 10, 2026",
     changes: [
-      { type: "fix", text: "Email header logo now blends seamlessly with the blue header (no dark box behind it)" },
+      { type: "improvement", text: "Notification emails optimized for mobile — responsive layout, proper scaling, and full-width action button on phones" },
     ],
   },
 ];
