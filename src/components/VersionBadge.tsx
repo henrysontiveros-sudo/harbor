@@ -1,0 +1,117 @@
+"use client";
+
+import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { CURRENT_VERSION, CHANGELOG, type ChangeType } from "@/lib/version";
+
+const TYPE_CONFIG: Record<ChangeType, { label: string; cls: string }> = {
+  feature:     { label: "New",      cls: "bg-imperial/10 text-imperial" },
+  improvement: { label: "Improved", cls: "bg-cerulean/10 text-cerulean" },
+  fix:         { label: "Fix",      cls: "bg-coral/15 text-coral" },
+  security:    { label: "Security", cls: "bg-sand/60 text-[#8a6320]" },
+};
+
+export default function VersionBadge() {
+  const [open, setOpen] = useState(false);
+  const [waving, setWaving] = useState(false);
+  const pathname = usePathname();
+
+  if (pathname === "/login") return null;
+
+  function handleMouseEnter() {
+    setWaving(true);
+    setTimeout(() => setWaving(false), 500);
+  }
+
+  return (
+    <>
+      <style>{`
+        @keyframes float-anchor {
+          0% { opacity: 0; transform: translateY(0) scale(0.8); }
+          50% { opacity: 1; transform: translateY(-16px) scale(1); }
+          100% { opacity: 0; transform: translateY(-28px) scale(0.9); }
+        }
+        @keyframes wobble-anchor {
+          0%, 100% { transform: rotate(-2deg); }
+          25% { transform: rotate(2deg) translateX(2px); }
+          75% { transform: rotate(-1deg) translateX(-2px); }
+        }
+        .anchor-float { animation: float-anchor 1s ease-out forwards; }
+        .anchor-wobble { animation: wobble-anchor 0.5s ease-in-out; }
+      `}</style>
+
+      {/* Version pill — fixed bottom-left */}
+      <div className="fixed bottom-4 left-4 z-40" style={{ position: "fixed" }}>
+        {waving && (
+          <span
+            className="anchor-float"
+            style={{ position: "absolute", bottom: "100%", left: "50%", transform: "translateX(-50%)", pointerEvents: "none", fontSize: "16px" }}
+          >
+            ⚓
+          </span>
+        )}
+        <button
+          onClick={() => setOpen(true)}
+          onMouseEnter={handleMouseEnter}
+          title="View change log"
+          className={`bg-imperial text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md ring-1 ring-white/20 hover:bg-imperial/80 transition-colors tracking-widest${waving ? " anchor-wobble" : ""}`}
+        >
+          v{CURRENT_VERSION}
+        </button>
+      </div>
+
+      {/* Changelog modal */}
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden">
+            <div className="bg-imperial px-6 py-4 flex items-center justify-between shrink-0">
+              <div>
+                <h2 className="text-white font-bold text-base tracking-wide">Change Log</h2>
+                <p className="text-white/50 text-[11px] mt-0.5 tracking-widest uppercase">
+                  Harbor · Mariners Church
+                </p>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-white/50 hover:text-white transition-colors text-xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+            <div className="h-[3px] bg-cerulean shrink-0" />
+
+            <div className="overflow-y-auto p-6 space-y-8">
+              {[...CHANGELOG].reverse().map((entry) => (
+                <div key={entry.version}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="bg-imperial text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full tracking-widest">
+                      v{entry.version}
+                    </span>
+                    <span className="text-ink/40 text-xs">{entry.date}</span>
+                  </div>
+                  <ul className="space-y-2.5">
+                    {entry.changes.map((change, i) => {
+                      const cfg = TYPE_CONFIG[change.type];
+                      return (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-px ${cfg.cls}`}>
+                            {cfg.label}
+                          </span>
+                          <span className="text-sm text-ink/80 leading-snug">{change.text}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

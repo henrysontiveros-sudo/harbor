@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import VersionBadge from "@/components/VersionBadge";
+import FeedbackButton from "@/components/FeedbackButton";
 
 const gotham = localFont({
   src: [
@@ -24,6 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={gotham.variable}>
       <body className="font-sans antialiased bg-[#F7F9FB] text-ink min-h-screen">
         {children}
+        <VersionBadge />
+        <FeedbackButton />
       </body>
     </html>
   );
