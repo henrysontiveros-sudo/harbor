@@ -17,7 +17,7 @@ export default async function SpacesPage() {
     .order("sort_order");
   const { data: spaces } = await supabase
     .from("spaces")
-    .select("id, campus_id, building_id, name, capacity, amenities, sort_order")
+    .select("id, campus_id, building_id, group_name, name, capacity, amenities, sort_order")
     .eq("active", true)
     .order("sort_order");
 

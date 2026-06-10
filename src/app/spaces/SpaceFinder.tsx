@@ -8,6 +8,7 @@ interface Campus { id: string; name: string; slug: string }
 interface Building { id: string; campus_id: string; name: string; sort_order: number }
 interface Space {
   id: string; campus_id: string; building_id: string | null;
+  group_name: string | null;
   name: string; capacity: number | null; amenities: string[]; sort_order: number;
 }
 interface Busy {
@@ -145,11 +146,25 @@ export default function SpaceFinder({
               .filter((s) => s.building_id === b.id)
               .filter((s) => !minCapNum || (s.capacity ?? 0) >= minCapNum);
             if (!list.length) return null;
+            const groups: { label: string | null; items: Space[] }[] = [];
+            for (const s of list) {
+              let g = groups.find((x) => x.label === (s.group_name ?? null));
+              if (!g) { g = { label: s.group_name ?? null, items: [] }; groups.push(g); }
+              g.items.push(s);
+            }
             return (
               <section key={b.id}>
                 <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">{b.name}</h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                  {list.map((s) => {
+                <div className="space-y-3">
+                {groups.map((g) => (
+                  <div key={g.label ?? "_"}>
+                    {g.label && (
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-ink/30 mb-1.5 pl-1 border-l-2 border-cerulean/30">
+                        {g.label}
+                      </h3>
+                    )}
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {g.items.map((s) => {
                     const conflicts = busyBySpace.get(s.id) ?? [];
                     const free = conflicts.length === 0;
                     return (
@@ -176,6 +191,9 @@ export default function SpaceFinder({
                       </div>
                     );
                   })}
+                    </div>
+                  </div>
+                ))}
                 </div>
               </section>
             );

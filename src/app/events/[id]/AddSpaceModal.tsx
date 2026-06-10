@@ -132,18 +132,25 @@ export default function AddSpaceModal({
           <label className="label">Space *</label>
           <select className="input" value={spaceId} onChange={(e) => setSpaceId(e.target.value)}>
             <option value="">Choose a space…</option>
-            {buildings.map((b) => {
+            {buildings.flatMap((b) => {
               const list = spaces.filter((s) => s.building_id === b.id);
-              if (!list.length) return null;
-              return (
-                <optgroup key={b.id} label={b.name}>
-                  {list.map((s) => (
+              if (!list.length) return [];
+              const groups: { label: string; items: any[] }[] = [];
+              for (const s of list) {
+                const label = s.group_name ? `${b.name} › ${s.group_name}` : b.name;
+                let g = groups.find((x) => x.label === label);
+                if (!g) { g = { label, items: [] }; groups.push(g); }
+                g.items.push(s);
+              }
+              return groups.map((g) => (
+                <optgroup key={g.label} label={g.label}>
+                  {g.items.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.name}{s.capacity ? ` (cap ${s.capacity})` : ""}
                     </option>
                   ))}
                 </optgroup>
-              );
+              ));
             })}
           </select>
           {selectedSpace?.amenities?.length > 0 && (

@@ -31,7 +31,7 @@ export default async function EventPage({
       supabase.from("event_occurrences").select("*").eq("event_id", id).order("starts_at"),
       supabase.from("space_requests").select(`*, spaces ( id, name, capacity, amenities, building_id, buildings ( name ) ), profiles!space_requests_requested_by_fkey ( full_name, email )`).eq("event_id", id).order("created_at"),
       supabase.from("event_editors").select(`user_id, profiles!event_editors_user_id_fkey ( id, full_name, email )`).eq("event_id", id),
-      supabase.from("spaces").select("id, campus_id, building_id, name, capacity, amenities, sort_order").eq("campus_id", event.campus_id).eq("active", true).order("sort_order"),
+      supabase.from("spaces").select("id, campus_id, building_id, group_name, name, capacity, amenities, sort_order").eq("campus_id", event.campus_id).eq("active", true).order("sort_order"),
       supabase.from("buildings").select("id, campus_id, name, sort_order").eq("campus_id", event.campus_id).order("sort_order"),
       supabase.from("profiles").select("role").eq("id", user!.id).single(),
     ]);
