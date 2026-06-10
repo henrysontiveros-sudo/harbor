@@ -24,6 +24,7 @@ export default function EventDetail({
   const router = useRouter();
   const supabase = createClient();
   const [showAdd, setShowAdd] = useState(false);
+  const [editingRequest, setEditingRequest] = useState<any | null>(null);
   const [showAllOccs, setShowAllOccs] = useState(false);
 
   const activeOccs = useMemo(
@@ -112,9 +113,21 @@ export default function EventDetail({
                     </span>
                     <span className="flex-1" />
                     {canEdit && ["pending", "approved"].includes(r.status) && (
-                      <button onClick={() => cancelRequest(r.id)}
-                        className="text-xs text-coral hover:underline">
-                        Cancel
+                      <>
+                        <button onClick={() => setEditingRequest(r)}
+                          className="text-xs text-cerulean hover:underline">
+                          Edit
+                        </button>
+                        <button onClick={() => cancelRequest(r.id)}
+                          className="text-xs text-coral hover:underline">
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                    {canEdit && r.status === "denied" && (
+                      <button onClick={() => setEditingRequest(r)}
+                        className="text-xs text-cerulean hover:underline">
+                        Edit & resubmit
                       </button>
                     )}
                   </div>
@@ -175,14 +188,15 @@ export default function EventDetail({
         ownerName={event.profiles?.full_name ?? event.profiles?.email ?? "Owner"}
       />
 
-      {showAdd && (
+      {(showAdd || editingRequest) && (
         <AddSpaceModal
           event={event}
           occurrences={activeOccs}
           existingRequests={requests}
           spaces={spaces}
           buildings={buildings}
-          onClose={() => setShowAdd(false)}
+          editRequest={editingRequest ?? undefined}
+          onClose={() => { setShowAdd(false); setEditingRequest(null); }}
         />
       )}
     </main>

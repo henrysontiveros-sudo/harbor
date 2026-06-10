@@ -3,27 +3,28 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { fmtRange } from "@/lib/dates";
 import { describeRecurrence } from "@/lib/recurrence";
 import StatusBadge from "@/components/StatusBadge";
 
 export default function ApprovalsList({ pending, recent }: { pending: any[]; recent: any[] }) {
   const router = useRouter();
-  const supabase = createClient();
   const [denyingId, setDenyingId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
 
   async function decide(id: string, status: "approved" | "denied") {
     setBusy(id);
-    const { data: { user } } = await supabase.auth.getUser();
-    await supabase.from("space_requests").update({
-      status,
-      decided_by: user!.id,
-      decided_at: new Date().toISOString(),
-      denial_reason: status === "denied" ? reason.trim() || null : null,
-    }).eq("id", id);
+    const res = await fetch(`/api/requests/${id}/decide`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status, denial_reason: status === "denied" ? reason.trim() || null : null }),
+    });
+    if (!res.ok) {
+      alert("Couldn't save the decision. Please try again.");
+      setBusy(null);
+      return;
+    }
     setBusy(null);
     setDenyingId(null);
     setReason("");

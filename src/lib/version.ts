@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.2";
+export const CURRENT_VERSION = "1.3";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -45,6 +45,15 @@ export const CHANGELOG: VersionEntry[] = [
     changes: [
       { type: "feature", text: "Version badge with change log (bottom-left)" },
       { type: "feature", text: "In-app feedback — report bugs and suggest ideas from any page (bottom-right)" },
+    ],
+  },
+  {
+    version: "1.3",
+    date: "June 10, 2026",
+    changes: [
+      { type: "feature", text: "Email notifications — requesters now receive an email when their space request is approved or denied" },
+      { type: "feature", text: "Edit space requests — modify a pending or approved request (resubmits for approval), or edit & resubmit a denied one" },
+      { type: "feature", text: "Setup Sheet — printable day-of run sheet per campus with setups, tech, and catering grouped by building" },
     ],
   },
 ];

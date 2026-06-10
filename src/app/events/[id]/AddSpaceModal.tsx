@@ -15,7 +15,7 @@ interface Conflict {
 }
 
 export default function AddSpaceModal({
-  event, occurrences, existingRequests, spaces, buildings, onClose,
+  event, occurrences, existingRequests, spaces, buildings, onClose, editRequest,
 }: {
   event: any;
   occurrences: any[];
@@ -23,21 +23,22 @@ export default function AddSpaceModal({
   spaces: any[];
   buildings: any[];
   onClose: () => void;
+  editRequest?: any;
 }) {
   const router = useRouter();
   const supabase = createClient();
 
-  const [spaceId, setSpaceId] = useState("");
-  const [scope, setScope] = useState<"whole_event" | "occurrence">("whole_event");
-  const [occurrenceId, setOccurrenceId] = useState(occurrences[0]?.id ?? "");
-  const [tables, setTables] = useState(0);
-  const [chairs, setChairs] = useState(0);
-  const [setupStyle, setSetupStyle] = useState("As-Is");
-  const [setupNotes, setSetupNotes] = useState("");
-  const [techNeeded, setTechNeeded] = useState(false);
-  const [techDetails, setTechDetails] = useState("");
-  const [cateringNeeded, setCateringNeeded] = useState(false);
-  const [cateringDetails, setCateringDetails] = useState("");
+  const [spaceId, setSpaceId] = useState(editRequest?.space_id ?? "");
+  const [scope, setScope] = useState<"whole_event" | "occurrence">(editRequest?.scope ?? "whole_event");
+  const [occurrenceId, setOccurrenceId] = useState(editRequest?.occurrence_id ?? occurrences[0]?.id ?? "");
+  const [tables, setTables] = useState(editRequest?.tables_qty ?? 0);
+  const [chairs, setChairs] = useState(editRequest?.chairs_qty ?? 0);
+  const [setupStyle, setSetupStyle] = useState(editRequest?.setup_style ?? "As-Is");
+  const [setupNotes, setSetupNotes] = useState(editRequest?.setup_notes ?? "");
+  const [techNeeded, setTechNeeded] = useState(editRequest?.tech_needed ?? false);
+  const [techDetails, setTechDetails] = useState(editRequest?.tech_details ?? "");
+  const [cateringNeeded, setCateringNeeded] = useState(editRequest?.catering_needed ?? false);
+  const [cateringDetails, setCateringDetails] = useState(editRequest?.catering_details ?? "");
   const [conflicts, setConflicts] = useState<Conflict[] | null>(null);
   const [checking, setChecking] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -79,13 +80,14 @@ export default function AddSpaceModal({
     if (!spaceId) return false;
     return existingRequests.some(
       (r) =>
+        r.id !== editRequest?.id &&
         r.space_id === spaceId &&
         ["pending", "approved"].includes(r.status) &&
         (r.scope === "whole_event" ||
           scope === "whole_event" ||
           r.occurrence_id === occurrenceId)
     );
-  }, [spaceId, scope, occurrenceId, existingRequests]);
+  }, [spaceId, scope, occurrenceId, existingRequests, editRequest]);
 
   async function submit() {
     setErr(null);
@@ -94,7 +96,7 @@ export default function AddSpaceModal({
     if (alreadyRequested) { setErr("You already have a request for this space."); return; }
     setBusy(true);
     const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await supabase.from("space_requests").insert({
+    const payload = {
       event_id: event.id,
       space_id: spaceId,
       scope,
@@ -107,9 +109,11 @@ export default function AddSpaceModal({
       tech_details: techNeeded ? techDetails.trim() || null : null,
       catering_needed: cateringNeeded,
       catering_details: cateringNeeded ? cateringDetails.trim() || null : null,
-      requested_by: user!.id,
-      status: "pending",
-    });
+      status: "pending" as const,
+    };
+    const { error } = editRequest
+      ? await supabase.from("space_requests").update(payload).eq("id", editRequest.id)
+      : await supabase.from("space_requests").insert({ ...payload, requested_by: user!.id });
     setBusy(false);
     if (error) { setErr(error.message); return; }
     router.refresh();
@@ -123,7 +127,7 @@ export default function AddSpaceModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="card w-full max-w-lg p-6 space-y-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-black text-imperial">Request a Space</h2>
+          <h2 className="text-lg font-black text-imperial">{editRequest ? "Edit Space Request" : "Request a Space"}</h2>
           <button onClick={onClose} className="text-ink/40 hover:text-ink text-xl leading-none">×</button>
         </div>
 
@@ -280,7 +284,7 @@ export default function AddSpaceModal({
           <button onClick={onClose} className="btn-secondary">Cancel</button>
           <button onClick={submit} disabled={busy || blocked || checking || !spaceId || alreadyRequested}
             className="btn-primary">
-            {busy ? "Submitting…" : "Submit for approval"}
+            {busy ? "Submitting…" : editRequest ? "Save & resubmit for approval" : "Submit for approval"}
           </button>
         </div>
       </div>

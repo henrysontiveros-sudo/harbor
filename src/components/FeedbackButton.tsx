@@ -59,7 +59,7 @@ export default function FeedbackButton() {
       {/* Feedback pill — fixed bottom-right */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-40 bg-cerulean text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md hover:bg-cerulean/80 transition-colors flex items-center gap-1.5 tracking-wide"
+        className="fixed bottom-4 right-4 z-40 print:hidden bg-cerulean text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md hover:bg-cerulean/80 transition-colors flex items-center gap-1.5 tracking-wide"
       >
         <span className="text-sm leading-none">💬</span>
         Feedback
