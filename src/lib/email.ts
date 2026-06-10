@@ -17,8 +17,15 @@ function shell(title: string, body: string) {
   <div style="font-family:Helvetica,Arial,sans-serif;background:#F7F9FB;padding:32px 16px;">
     <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e9ef;">
       <div style="background:${IMPERIAL};padding:20px 28px;">
-        <p style="margin:0;color:#fff;font-size:18px;font-weight:bold;">⚓ Harbor</p>
-        <p style="margin:2px 0 0;color:rgba(255,255,255,.55);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Mariners Church</p>
+        <table style="border-collapse:collapse;"><tr>
+          <td style="padding-right:12px;vertical-align:middle;">
+            <img src="${APP_URL}/mariners-m-white.png" width="36" height="36" alt="Mariners Church" style="display:block;" />
+          </td>
+          <td style="vertical-align:middle;">
+            <p style="margin:0;color:#fff;font-size:18px;font-weight:bold;">Harbor</p>
+            <p style="margin:2px 0 0;color:rgba(255,255,255,.55);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Mariners Church</p>
+          </td>
+        </tr></table>
       </div>
       <div style="height:3px;background:${CERULEAN};"></div>
       <div style="padding:28px;">

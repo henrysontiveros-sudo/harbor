@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.3";
+export const CURRENT_VERSION = "1.31";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -54,6 +54,13 @@ export const CHANGELOG: VersionEntry[] = [
       { type: "feature", text: "Email notifications — requesters now receive an email when their space request is approved or denied" },
       { type: "feature", text: "Edit space requests — modify a pending or approved request (resubmits for approval), or edit & resubmit a denied one" },
       { type: "feature", text: "Setup Sheet — printable day-of run sheet per campus with setups, tech, and catering grouped by building" },
+    ],
+  },
+  {
+    version: "1.31",
+    date: "June 10, 2026",
+    changes: [
+      { type: "improvement", text: "Notification emails now use the Mariners circle-M logo in the header" },
     ],
   },
 ];
