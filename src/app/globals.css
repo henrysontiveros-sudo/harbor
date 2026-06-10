@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans: var(--font-gotham), "Montserrat", system-ui, sans-serif;
+  --color-imperial: #124061;
+  --color-cerulean: #2e6eb7;
+  --color-sky: #7bc7cf;
+  --color-ink: #1e1c1d;
+  --color-coral: #f37768;
+  --color-radiant: #a6ce3a;
+  --color-sand: #f3d2a7;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+::selection {
+  background: #7bc7cf55;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.btn-primary {
+  @apply bg-cerulean text-white font-medium rounded-lg px-4 py-2 hover:bg-imperial transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+}
+.btn-secondary {
+  @apply bg-white text-imperial border border-imperial/30 font-medium rounded-lg px-4 py-2 hover:bg-imperial/5 transition-colors disabled:opacity-50;
+}
+.btn-danger {
+  @apply bg-coral text-white font-medium rounded-lg px-4 py-2 hover:opacity-90 transition-opacity disabled:opacity-50;
+}
+.card {
+  @apply bg-white rounded-xl border border-ink/10 shadow-sm;
+}
+.input {
+  @apply w-full rounded-lg border border-ink/20 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cerulean/40 focus:border-cerulean bg-white;
+}
+.label {
+  @apply block text-xs font-bold uppercase tracking-wide text-imperial mb-1;
+}
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
 }
