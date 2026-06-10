@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.31";
+export const CURRENT_VERSION = "1.32";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -61,6 +61,13 @@ export const CHANGELOG: VersionEntry[] = [
     date: "June 10, 2026",
     changes: [
       { type: "improvement", text: "Notification emails now use the Mariners circle-M logo in the header" },
+    ],
+  },
+  {
+    version: "1.32",
+    date: "June 10, 2026",
+    changes: [
+      { type: "fix", text: "Email header logo now blends seamlessly with the blue header (no dark box behind it)" },
     ],
   },
 ];

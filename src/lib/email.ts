@@ -19,11 +19,11 @@ function shell(title: string, body: string) {
       <div style="background:${IMPERIAL};padding:20px 28px;">
         <table style="border-collapse:collapse;"><tr>
           <td style="padding-right:12px;vertical-align:middle;">
-            <img src="${APP_URL}/mariners-m-white.png" width="36" height="36" alt="Mariners Church" style="display:block;" />
+            <img src="${APP_URL}/mariners-m-header.png" width="36" height="36" alt="Mariners Church" style="display:block;border:0;" />
           </td>
           <td style="vertical-align:middle;">
             <p style="margin:0;color:#fff;font-size:18px;font-weight:bold;">Harbor</p>
-            <p style="margin:2px 0 0;color:rgba(255,255,255,.55);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Mariners Church</p>
+            <p style="margin:2px 0 0;color:rgba(255,255,255,.75);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Mariners Church</p>
           </td>
         </tr></table>
       </div>
