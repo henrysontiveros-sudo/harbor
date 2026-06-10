@@ -34,7 +34,7 @@ export default async function MyEventsPage() {
     <>
       <Nav />
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>
             <h1 className="text-2xl font-black text-imperial">My Events</h1>
             <p className="text-sm text-ink/50">Events you own or can edit.</p>

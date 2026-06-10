@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "./SignOutButton";
+import MobileNav from "./MobileNav";
 
 export default async function Nav() {
   const supabase = await createClient();
@@ -29,11 +30,11 @@ export default async function Nav() {
 
   return (
     <header className="bg-imperial text-white sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
+      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-3 md:gap-6">
         <Link href="/" className="flex items-center gap-2 font-black text-lg tracking-tight">
           <span>⚓</span> Harbor
         </Link>
-        <nav className="flex items-center gap-1 text-sm flex-1">
+        <nav className="hidden md:flex items-center gap-1 text-sm flex-1">
           <Link href="/" className="px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors">
             This Week
           </Link>
@@ -57,13 +58,14 @@ export default async function Nav() {
             </Link>
           )}
         </nav>
-        <Link href="/events/new" className="bg-sky text-imperial font-bold text-sm px-3.5 py-1.5 rounded-md hover:bg-white transition-colors">
+        <Link href="/events/new" className="hidden md:inline-block bg-sky text-imperial font-bold text-sm px-3.5 py-1.5 rounded-md hover:bg-white transition-colors">
           + New Event
         </Link>
-        <div className="flex items-center gap-2 text-xs text-white/70">
+        <div className="hidden md:flex items-center gap-2 text-xs text-white/70">
           <span className="hidden sm:block max-w-[140px] truncate">{name}</span>
           <SignOutButton />
         </div>
+        <MobileNav isAdmin={isAdmin} name={name} />
       </div>
     </header>
   );

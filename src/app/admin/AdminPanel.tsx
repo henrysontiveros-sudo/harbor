@@ -57,8 +57,8 @@ export default function AdminPanel({
   return (
     <div className="space-y-6">
       {isSuper && (
-        <form onSubmit={addAdmin} className="card p-4 flex flex-wrap gap-3 items-end">
-          <div className="flex-1 min-w-[220px]">
+        <form onSubmit={addAdmin} className="card p-4 flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:items-end">
+          <div className="sm:flex-1 sm:min-w-[220px]">
             <label className="label">Staff email</label>
             <input type="email" required className="input" placeholder="name@marinerschurch.org"
               value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -69,7 +69,7 @@ export default function AdminPanel({
               {campuses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
-          <button type="submit" disabled={busy} className="btn-primary">
+          <button type="submit" disabled={busy} className="btn-primary py-2.5 sm:py-2">
             {busy ? "Adding…" : "Make campus admin"}
           </button>
           {err && <p className="text-sm text-coral w-full">{err}</p>}
@@ -94,7 +94,7 @@ export default function AdminPanel({
                       <span>{a.full_name ?? a.email}</span>
                       {isSuper && (
                         <button onClick={() => removeAdmin(c.id, a.id)}
-                          className="text-xs text-coral hover:underline">remove</button>
+                          className="text-xs text-coral hover:underline px-2 py-2 -my-1">remove</button>
                       )}
                     </div>
                   ))}

@@ -41,7 +41,7 @@ export default function VersionBadge() {
       `}</style>
 
       {/* Version pill — fixed bottom-left */}
-      <div className="fixed bottom-4 left-4 z-40 print:hidden" style={{ position: "fixed" }}>
+      <div className="fixed bottom-3 left-3 sm:bottom-4 sm:left-4 z-40 print:hidden" style={{ position: "fixed" }}>
         {waving && (
           <span
             className="anchor-float"

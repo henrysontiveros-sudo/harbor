@@ -76,10 +76,10 @@ export default function EditorsPanel({
           )}
         </div>
         {canEdit && (
-          <form onSubmit={addEditor} className="flex gap-2">
-            <input type="email" required className="input flex-1" placeholder="coworker@marinerschurch.org"
+          <form onSubmit={addEditor} className="flex flex-col sm:flex-row gap-2">
+            <input type="email" required className="input sm:flex-1" placeholder="coworker@marinerschurch.org"
               value={email} onChange={(e) => setEmail(e.target.value)} />
-            <button type="submit" disabled={busy} className="btn-secondary whitespace-nowrap">
+            <button type="submit" disabled={busy} className="btn-secondary whitespace-nowrap py-2.5 sm:py-2">
               {busy ? "Adding…" : "Add editor"}
             </button>
           </form>

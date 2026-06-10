@@ -71,9 +71,9 @@ export default function EventDetail({
           </p>
         </div>
         {canEdit && event.status === "active" && (
-          <div className="flex gap-2">
-            <button onClick={() => setShowAdd(true)} className="btn-primary">+ Request a space</button>
-            <button onClick={cancelEvent} className="btn-danger">Cancel event</button>
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            <button onClick={() => setShowAdd(true)} className="btn-primary py-2.5 sm:py-2 flex-1 sm:flex-none">+ Request a space</button>
+            <button onClick={cancelEvent} className="btn-danger py-2.5 sm:py-2">Cancel event</button>
           </div>
         )}
       </div>
@@ -115,18 +115,18 @@ export default function EventDetail({
                     {canEdit && ["pending", "approved"].includes(r.status) && (
                       <>
                         <button onClick={() => setEditingRequest(r)}
-                          className="text-xs text-cerulean hover:underline">
+                          className="text-xs text-cerulean hover:underline px-2 py-2 -my-1">
                           Edit
                         </button>
                         <button onClick={() => cancelRequest(r.id)}
-                          className="text-xs text-coral hover:underline">
+                          className="text-xs text-coral hover:underline px-2 py-2 -my-1">
                           Cancel
                         </button>
                       </>
                     )}
                     {canEdit && r.status === "denied" && (
                       <button onClick={() => setEditingRequest(r)}
-                        className="text-xs text-cerulean hover:underline">
+                        className="text-xs text-cerulean hover:underline px-2 py-2 -my-1">
                         Edit & resubmit
                       </button>
                     )}
@@ -165,9 +165,9 @@ export default function EventDetail({
         </h2>
         <div className="card divide-y divide-ink/5">
           {visibleOccs.map((o) => (
-            <div key={o.id} className="px-4 py-2.5 flex items-center gap-3 text-sm">
-              <span className="font-medium w-32">{fmtDay(new Date(o.starts_at))}</span>
-              <span className="text-ink/50">{fmtTimeRange(new Date(o.starts_at), new Date(o.ends_at))}</span>
+            <div key={o.id} className="px-4 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm">
+              <span className="font-medium w-28 sm:w-32 shrink-0">{fmtDay(new Date(o.starts_at))}</span>
+              <span className="text-ink/50 whitespace-nowrap">{fmtTimeRange(new Date(o.starts_at), new Date(o.ends_at))}</span>
             </div>
           ))}
           {activeOccs.length > 6 && (

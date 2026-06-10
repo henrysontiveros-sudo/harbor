@@ -65,22 +65,22 @@ export default function ApprovalsList({ pending, recent }: { pending: any[]; rec
           </p>
         )}
         {actions && (
-          <div className="flex items-center gap-2 mt-3">
+          <div className="flex flex-wrap items-center gap-2 mt-3">
             <button onClick={() => decide(r.id, "approved")} disabled={busy === r.id}
-              className="btn-primary text-sm py-1.5">
+              className="btn-primary text-sm py-2.5 sm:py-1.5">
               {busy === r.id ? "…" : "Approve"}
             </button>
             {denyingId === r.id ? (
               <>
-                <input autoFocus className="input flex-1 py-1.5 text-sm" placeholder="Reason (optional)"
+                <input autoFocus className="input w-full sm:w-auto sm:flex-1 py-2 sm:py-1.5 text-sm" placeholder="Reason (optional)"
                   value={reason} onChange={(e) => setReason(e.target.value)} />
                 <button onClick={() => decide(r.id, "denied")} disabled={busy === r.id}
-                  className="btn-danger text-sm py-1.5">Confirm deny</button>
+                  className="btn-danger text-sm py-2.5 sm:py-1.5">Confirm deny</button>
                 <button onClick={() => { setDenyingId(null); setReason(""); }}
-                  className="text-xs text-ink/40 hover:text-ink">cancel</button>
+                  className="text-xs text-ink/40 hover:text-ink px-2 py-2">cancel</button>
               </>
             ) : (
-              <button onClick={() => setDenyingId(r.id)} className="btn-secondary text-sm py-1.5">
+              <button onClick={() => setDenyingId(r.id)} className="btn-secondary text-sm py-2.5 sm:py-1.5">
                 Deny
               </button>
             )}

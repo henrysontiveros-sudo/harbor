@@ -59,7 +59,7 @@ export default function FeedbackButton() {
       {/* Feedback pill — fixed bottom-right */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-40 print:hidden bg-cerulean text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md hover:bg-cerulean/80 transition-colors flex items-center gap-1.5 tracking-wide"
+        className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-40 print:hidden bg-cerulean text-white text-[11px] font-bold px-3 py-2 sm:py-1.5 rounded-full shadow-md hover:bg-cerulean/80 transition-colors flex items-center gap-1.5 tracking-wide"
       >
         <span className="text-sm leading-none">💬</span>
         Feedback
@@ -68,7 +68,7 @@ export default function FeedbackButton() {
       {open && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={handleClose} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto overflow-x-hidden">
             <div className="bg-imperial px-6 py-4 flex items-center justify-between">
               <div>
                 <h2 className="text-white font-bold text-base tracking-wide">Share Feedback</h2>

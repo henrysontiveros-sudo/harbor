@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={gotham.variable}>
-      <body className="font-sans antialiased bg-[#F7F9FB] text-ink min-h-screen">
+      <body className="font-sans antialiased bg-[#F7F9FB] text-ink min-h-screen pb-16 print:pb-0">
         {children}
         <VersionBadge />
         <FeedbackButton />

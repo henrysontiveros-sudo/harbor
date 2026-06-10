@@ -83,7 +83,7 @@ export default function NewEventForm({ campuses }: { campuses: Campus[] }) {
   }
 
   return (
-    <form onSubmit={submit} className="card p-6 space-y-5">
+    <form onSubmit={submit} className="card p-4 sm:p-6 space-y-5">
       <div>
         <label className="label">Event title *</label>
         <input className="input" required value={title} onChange={(e) => setTitle(e.target.value)}
@@ -146,10 +146,10 @@ export default function NewEventForm({ campuses }: { campuses: Campus[] }) {
       {(freq === "weekly" || freq === "biweekly") && (
         <div>
           <label className="label">On days</label>
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {DAY_LABELS.map((d, i) => (
               <button type="button" key={d} onClick={() => toggleDay(i)}
-                className={`w-11 h-9 rounded-lg text-xs font-bold ${byweekday.includes(i) ? "bg-cerulean text-white" : "bg-white border border-ink/15 text-ink/60"}`}>
+                className={`w-10 h-10 sm:w-11 rounded-lg text-xs font-bold ${byweekday.includes(i) ? "bg-cerulean text-white" : "bg-white border border-ink/15 text-ink/60"}`}>
                 {d}
               </button>
             ))}
@@ -167,9 +167,9 @@ export default function NewEventForm({ campuses }: { campuses: Campus[] }) {
 
       {err && <p className="text-sm text-coral">{err}</p>}
 
-      <div className="flex justify-end gap-3 pt-2">
-        <button type="button" onClick={() => router.back()} className="btn-secondary">Cancel</button>
-        <button type="submit" disabled={busy} className="btn-primary">
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+        <button type="button" onClick={() => router.back()} className="btn-secondary py-2.5 sm:py-2">Cancel</button>
+        <button type="submit" disabled={busy} className="btn-primary py-2.5 sm:py-2">
           {busy ? "Creating…" : "Create event → add spaces"}
         </button>
       </div>

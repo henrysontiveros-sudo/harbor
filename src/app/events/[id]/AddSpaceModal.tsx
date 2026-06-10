@@ -123,12 +123,12 @@ export default function AddSpaceModal({
   const selectedSpace = spaces.find((s) => s.id === spaceId);
 
   return (
-    <div className="fixed inset-0 z-50 bg-ink/40 flex items-start justify-center overflow-y-auto py-8 px-4"
+    <div className="fixed inset-0 z-50 bg-ink/40 flex items-start justify-center overflow-y-auto py-4 sm:py-8 px-3 sm:px-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="card w-full max-w-lg p-6 space-y-5">
+      <div className="card w-full max-w-lg p-4 sm:p-6 space-y-5">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-black text-imperial">{editRequest ? "Edit Space Request" : "Request a Space"}</h2>
-          <button onClick={onClose} className="text-ink/40 hover:text-ink text-xl leading-none">×</button>
+          <button onClick={onClose} aria-label="Close" className="text-ink/40 hover:text-ink text-2xl leading-none w-10 h-10 -mr-2 -mt-2 flex items-center justify-center">×</button>
         </div>
 
         {/* Space picker */}
@@ -168,7 +168,7 @@ export default function AddSpaceModal({
         {isRecurring && (
           <div>
             <label className="label">Apply to</label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button type="button" onClick={() => setScope("whole_event")}
                 className={`flex-1 rounded-lg border px-3 py-2.5 text-sm font-medium ${scope === "whole_event" ? "border-cerulean bg-cerulean/5 text-cerulean" : "border-ink/15 text-ink/60"}`}>
                 Whole event
@@ -225,7 +225,7 @@ export default function AddSpaceModal({
         ))}
 
         {/* Setup */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <div>
             <label className="label">Tables</label>
             <input type="number" min={0} className="input" value={tables}
@@ -236,7 +236,7 @@ export default function AddSpaceModal({
             <input type="number" min={0} className="input" value={chairs}
               onChange={(e) => setChairs(parseInt(e.target.value) || 0)} />
           </div>
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="label">Setup style</label>
             <select className="input" value={setupStyle} onChange={(e) => setSetupStyle(e.target.value)}>
               {SETUP_STYLES.map((s) => <option key={s}>{s}</option>)}
@@ -280,10 +280,10 @@ export default function AddSpaceModal({
 
         {err && <p className="text-sm text-coral">{err}</p>}
 
-        <div className="flex justify-end gap-3 pt-1">
-          <button onClick={onClose} className="btn-secondary">Cancel</button>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-1">
+          <button onClick={onClose} className="btn-secondary py-2.5 sm:py-2">Cancel</button>
           <button onClick={submit} disabled={busy || blocked || checking || !spaceId || alreadyRequested}
-            className="btn-primary">
+            className="btn-primary py-2.5 sm:py-2">
             {busy ? "Submitting…" : editRequest ? "Save & resubmit for approval" : "Submit for approval"}
           </button>
         </div>

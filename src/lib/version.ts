@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.5";
+export const CURRENT_VERSION = "1.6";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -69,6 +69,13 @@ export const CHANGELOG: VersionEntry[] = [
     date: "June 10, 2026",
     changes: [
       { type: "improvement", text: "Notification emails optimized for mobile — responsive layout, proper scaling, and full-width action button on phones" },
+    ],
+  },
+  {
+    version: "1.6",
+    date: "June 10, 2026",
+    changes: [
+      { type: "improvement", text: "Full mobile optimization — hamburger menu, responsive layouts on every page, stacked forms and modals, and larger tap targets on phones" },
     ],
   },
 ];

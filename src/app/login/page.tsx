@@ -52,7 +52,7 @@ function LoginInner() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-imperial relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-imperial relative overflow-hidden px-4 py-8">
       {/* subtle wave bands */}
       <div className="absolute inset-x-0 bottom-0 h-64 opacity-20"
         style={{
@@ -60,7 +60,7 @@ function LoginInner() {
             "radial-gradient(120% 60% at 50% 100%, #7BC7CF 0%, transparent 60%)",
         }}
       />
-      <div className="card relative z-10 w-full max-w-md mx-4 p-8">
+      <div className="card relative z-10 w-full max-w-md p-6 sm:p-8">
         <div className="text-center mb-8">
           <div className="text-4xl mb-3">{anchorEmoji()}</div>
           <h1 className="text-3xl font-black text-imperial tracking-tight">
