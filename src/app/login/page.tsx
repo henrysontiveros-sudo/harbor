@@ -4,10 +4,6 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-function anchorEmoji() {
-  return "⚓";
-}
-
 function LoginInner() {
   const params = useSearchParams();
   const next = params.get("next") || "/";
@@ -39,7 +35,6 @@ function LoginInner() {
       />
       <div className="card relative z-10 w-full max-w-md p-6 sm:p-8">
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">{anchorEmoji()}</div>
           <h1 className="text-3xl font-black text-imperial tracking-tight">
             Harbor
           </h1>
@@ -75,6 +70,11 @@ function LoginInner() {
 
         <p className="text-xs text-ink/40 text-center mt-6">
           Restricted to Mariners Church staff.
+        </p>
+        <p className="text-xs text-ink/40 text-center mt-2">
+          <a href="/privacy" className="underline hover:text-ink/60">Privacy Policy</a>
+          <span className="mx-1.5">·</span>
+          <a href="/terms" className="underline hover:text-ink/60">Terms of Service</a>
         </p>
       </div>
     </div>

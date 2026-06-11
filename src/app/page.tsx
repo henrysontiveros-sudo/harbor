@@ -104,9 +104,6 @@ export default async function WeekPage({
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-black text-imperial">{weekLabel}</h1>
-            <p className="text-sm text-ink/50">
-              Everything happening across Mariners — open to all staff.
-            </p>
           </div>
           <div className="flex items-center gap-2">
             <Link href={qs({ week: String(offset - 1) })} className="btn-secondary px-3 py-1.5 text-sm">←</Link>

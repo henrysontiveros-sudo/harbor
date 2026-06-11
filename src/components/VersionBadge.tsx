@@ -13,48 +13,18 @@ const TYPE_CONFIG: Record<ChangeType, { label: string; cls: string }> = {
 
 export default function VersionBadge() {
   const [open, setOpen] = useState(false);
-  const [waving, setWaving] = useState(false);
   const pathname = usePathname();
 
   if (pathname === "/login") return null;
 
-  function handleMouseEnter() {
-    setWaving(true);
-    setTimeout(() => setWaving(false), 500);
-  }
-
   return (
     <>
-      <style>{`
-        @keyframes float-anchor {
-          0% { opacity: 0; transform: translateY(0) scale(0.8); }
-          50% { opacity: 1; transform: translateY(-16px) scale(1); }
-          100% { opacity: 0; transform: translateY(-28px) scale(0.9); }
-        }
-        @keyframes wobble-anchor {
-          0%, 100% { transform: rotate(-2deg); }
-          25% { transform: rotate(2deg) translateX(2px); }
-          75% { transform: rotate(-1deg) translateX(-2px); }
-        }
-        .anchor-float { animation: float-anchor 1s ease-out forwards; }
-        .anchor-wobble { animation: wobble-anchor 0.5s ease-in-out; }
-      `}</style>
-
       {/* Version pill — fixed bottom-left */}
-      <div className="fixed bottom-3 left-3 sm:bottom-4 sm:left-4 z-40 print:hidden" style={{ position: "fixed" }}>
-        {waving && (
-          <span
-            className="anchor-float"
-            style={{ position: "absolute", bottom: "100%", left: "50%", transform: "translateX(-50%)", pointerEvents: "none", fontSize: "16px" }}
-          >
-            ⚓
-          </span>
-        )}
+      <div className="fixed bottom-3 left-3 sm:bottom-4 sm:left-4 z-40 print:hidden">
         <button
           onClick={() => setOpen(true)}
-          onMouseEnter={handleMouseEnter}
           title="View change log"
-          className={`bg-imperial text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md ring-1 ring-white/20 hover:bg-imperial/80 transition-colors tracking-widest${waving ? " anchor-wobble" : ""}`}
+          className="bg-imperial text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md ring-1 ring-white/20 hover:bg-imperial/80 transition-colors tracking-widest"
         >
           v{CURRENT_VERSION}
         </button>

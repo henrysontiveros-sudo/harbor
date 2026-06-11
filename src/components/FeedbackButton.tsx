@@ -5,11 +5,11 @@ import { usePathname } from "next/navigation";
 
 type FeedbackType = "bug" | "suggestion" | "improvement" | "other";
 
-const TYPES: { value: FeedbackType; label: string; emoji: string }[] = [
-  { value: "bug",         label: "Bug Report",  emoji: "🐛" },
-  { value: "suggestion",  label: "Suggestion",  emoji: "💡" },
-  { value: "improvement", label: "Improvement", emoji: "⚡" },
-  { value: "other",       label: "Other",       emoji: "💬" },
+const TYPES: { value: FeedbackType; label: string }[] = [
+  { value: "bug",         label: "Bug Report"  },
+  { value: "suggestion",  label: "Suggestion"  },
+  { value: "improvement", label: "Improvement" },
+  { value: "other",       label: "Other"       },
 ];
 
 export default function FeedbackButton() {
@@ -59,9 +59,8 @@ export default function FeedbackButton() {
       {/* Feedback pill — fixed bottom-right */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-40 print:hidden bg-cerulean text-white text-[11px] font-bold px-3 py-2 sm:py-1.5 rounded-full shadow-md hover:bg-cerulean/80 transition-colors flex items-center gap-1.5 tracking-wide"
+        className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-40 print:hidden bg-cerulean text-white text-[11px] font-bold px-3 py-2 sm:py-1.5 rounded-full shadow-md hover:bg-cerulean/80 transition-colors tracking-wide"
       >
-        <span className="text-sm leading-none">💬</span>
         Feedback
       </button>
 
@@ -84,26 +83,24 @@ export default function FeedbackButton() {
 
             {done ? (
               <div className="p-10 text-center">
-                <p className="text-3xl mb-2">⚓</p>
-                <p className="font-bold text-imperial">Feedback received — thank you!</p>
+                <p className="font-bold text-imperial">Feedback received — thank you.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
                   <p className="text-xs font-semibold text-ink/50 uppercase tracking-wide mb-2">Type</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {TYPES.map(({ value, label, emoji }) => (
+                    {TYPES.map(({ value, label }) => (
                       <button
                         key={value}
                         type="button"
                         onClick={() => setType(value)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
+                        className={`flex items-center justify-center px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                           type === value
                             ? "border-imperial bg-imperial text-white shadow-sm"
                             : "border-ink/15 text-ink/60 hover:border-ink/30 bg-white"
                         }`}
                       >
-                        <span className="text-base leading-none">{emoji}</span>
                         {label}
                       </button>
                     ))}

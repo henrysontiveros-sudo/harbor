@@ -100,7 +100,7 @@ export default function ApprovalsList({ pending, recent }: { pending: any[]; rec
           Pending ({pending.length})
         </h2>
         {pending.length === 0 ? (
-          <div className="card p-8 text-center text-ink/40">All caught up. 🌊</div>
+          <div className="card p-8 text-center text-ink/40">All caught up.</div>
         ) : (
           <div className="grid gap-2">
             {pending.map((r) => <RequestCard key={r.id} r={r} actions />)}

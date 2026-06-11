@@ -158,7 +158,7 @@ export default async function SetupSheetPage({
         </div>
 
         {rows.length === 0 ? (
-          <div className="card p-10 text-center text-ink/40">No approved setups for this day. 🌊</div>
+          <div className="card p-10 text-center text-ink/40">No approved setups for this day.</div>
         ) : (
           <div className="space-y-6">
             {[...byBuilding.entries()].map(([building, list]) => (
@@ -188,10 +188,10 @@ export default async function SetupSheetPage({
                           </span>
                         )}
                         {r.tech_needed && (
-                          <span className="text-cerulean">🎤 Tech: {r.tech_details || "requested"}</span>
+                          <span className="text-cerulean">Tech: {r.tech_details || "requested"}</span>
                         )}
                         {r.catering_needed && (
-                          <span className="text-[#8a6320]">🍽 Catering: {r.catering_details || "requested"}</span>
+                          <span className="text-[#8a6320]">Catering: {r.catering_details || "requested"}</span>
                         )}
                       </div>
                       {r.setup_notes && (

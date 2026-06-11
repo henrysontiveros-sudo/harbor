@@ -32,7 +32,7 @@ export default async function Nav() {
     <header className="bg-imperial text-white sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-3 md:gap-6">
         <Link href="/" className="flex items-center gap-2 font-black text-lg tracking-tight">
-          <span>⚓</span> Harbor
+          Harbor
         </Link>
         <nav className="hidden md:flex items-center gap-1 text-sm flex-1">
           <Link href="/" className="px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors">
