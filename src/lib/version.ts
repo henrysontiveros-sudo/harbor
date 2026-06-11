@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.6";
+export const CURRENT_VERSION = "1.7";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -76,6 +76,13 @@ export const CHANGELOG: VersionEntry[] = [
     date: "June 10, 2026",
     changes: [
       { type: "improvement", text: "Full mobile optimization — hamburger menu, responsive layouts on every page, stacked forms and modals, and larger tap targets on phones" },
+    ],
+  },
+  {
+    version: "1.7",
+    date: "June 10, 2026",
+    changes: [
+      { type: "feature", text: "Google sign-in is now the single login method — staff sign in with their Mariners Church Google account (magic-link email login removed)" },
     ],
   },
 ];
