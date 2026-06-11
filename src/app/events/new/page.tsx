@@ -1,11 +1,18 @@
 import Nav from "@/components/Nav";
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { canRequest, type UserRole } from "@/lib/types";
 import NewEventForm from "./NewEventForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewEventPage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from("profiles").select("role").eq("id", user!.id).single();
+  if (!canRequest(profile?.role as UserRole)) redirect("/");
+
   const { data: campuses } = await supabase
     .from("campuses")
     .select("id, name, slug")

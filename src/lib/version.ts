@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.8";
+export const CURRENT_VERSION = "1.9";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -91,6 +91,16 @@ export const CHANGELOG: VersionEntry[] = [
     changes: [
       { type: "improvement", text: "Cleaner, more professional interface — removed decorative emojis and redundant page subtitles throughout" },
       { type: "feature", text: "Added Privacy Policy and Terms of Service pages (required for Google sign-in verification)" },
+    ],
+  },
+  {
+    version: "1.9",
+    date: "June 10, 2026",
+    changes: [
+      { type: "feature", text: "New members are view-only by default — they can browse schedules and spaces but cannot create events or requests until promoted" },
+      { type: "feature", text: "Users & Roles admin page — super admins can set each person's role (Viewer, Staff, Admin, Super Admin)" },
+      { type: "feature", text: "Redesigned Admin dashboard with at-a-glance stats, a feedback inbox, an activity log, and a system diagnostics page" },
+      { type: "security", text: "Users can no longer change their own role; role changes are restricted to super admins and recorded in the activity log" },
     ],
   },
 ];

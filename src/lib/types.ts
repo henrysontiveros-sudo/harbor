@@ -1,4 +1,17 @@
-export type UserRole = "staff" | "admin" | "super_admin";
+export type UserRole = "viewer" | "staff" | "admin" | "super_admin";
+
+/** Roles allowed to create events and submit space requests. Viewers are read-only. */
+export const CAN_REQUEST_ROLES: UserRole[] = ["staff", "admin", "super_admin"];
+export function canRequest(role: UserRole | null | undefined): boolean {
+  return !!role && CAN_REQUEST_ROLES.includes(role);
+}
+
+export const ROLE_LABELS: Record<UserRole, string> = {
+  viewer: "Viewer",
+  staff: "Staff",
+  admin: "Admin",
+  super_admin: "Super Admin",
+};
 export type RequestStatus = "draft" | "pending" | "approved" | "denied" | "cancelled";
 export type RequestScope = "whole_event" | "occurrence";
 

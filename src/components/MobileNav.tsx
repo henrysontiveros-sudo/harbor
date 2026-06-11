@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SignOutButton from "./SignOutButton";
 
-export default function MobileNav({ isAdmin, name }: { isAdmin: boolean; name: string }) {
+export default function MobileNav({ isAdmin, canCreate, name }: { isAdmin: boolean; canCreate: boolean; name: string }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -30,13 +30,15 @@ export default function MobileNav({ isAdmin, name }: { isAdmin: boolean; name: s
   return (
     <div className="flex flex-1 items-center justify-end gap-1.5 md:hidden">
       {/* Compact new-event button, always visible on mobile */}
-      <Link
-        href="/events/new"
-        aria-label="New event"
-        className="bg-sky text-imperial font-black text-xl w-10 h-10 flex items-center justify-center rounded-md hover:bg-white transition-colors"
-      >
-        +
-      </Link>
+      {canCreate && (
+        <Link
+          href="/events/new"
+          aria-label="New event"
+          className="bg-sky text-imperial font-black text-xl w-10 h-10 flex items-center justify-center rounded-md hover:bg-white transition-colors"
+        >
+          +
+        </Link>
+      )}
 
       {/* Hamburger */}
       <button
@@ -71,13 +73,15 @@ export default function MobileNav({ isAdmin, name }: { isAdmin: boolean; name: s
                 {l.label}
               </Link>
             ))}
-            <Link
-              href="/events/new"
-              onClick={() => setOpen(false)}
-              className="mt-2 bg-sky text-imperial font-bold px-3 py-3 rounded-md text-center hover:bg-white transition-colors"
-            >
-              + New Event
-            </Link>
+            {canCreate && (
+              <Link
+                href="/events/new"
+                onClick={() => setOpen(false)}
+                className="mt-2 bg-sky text-imperial font-bold px-3 py-3 rounded-md text-center hover:bg-white transition-colors"
+              >
+                + New Event
+              </Link>
+            )}
             <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between gap-2 text-xs text-white/70">
               <span className="truncate">{name}</span>
               <SignOutButton />

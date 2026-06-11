@@ -10,6 +10,7 @@ export default async function Nav() {
   } = await supabase.auth.getUser();
 
   let isAdmin = false;
+  let canCreate = false;
   let name = "";
   if (user) {
     const { data: profile } = await supabase
@@ -18,6 +19,7 @@ export default async function Nav() {
       .eq("id", user.id)
       .single();
     isAdmin = profile?.role === "admin" || profile?.role === "super_admin";
+    canCreate = ["staff", "admin", "super_admin"].includes(profile?.role ?? "");
     name = profile?.full_name ?? user.email ?? "";
     if (!isAdmin) {
       const { count } = await supabase
@@ -58,14 +60,16 @@ export default async function Nav() {
             </Link>
           )}
         </nav>
-        <Link href="/events/new" className="hidden md:inline-block bg-sky text-imperial font-bold text-sm px-3.5 py-1.5 rounded-md hover:bg-white transition-colors">
-          + New Event
-        </Link>
+        {canCreate && (
+          <Link href="/events/new" className="hidden md:inline-block bg-sky text-imperial font-bold text-sm px-3.5 py-1.5 rounded-md hover:bg-white transition-colors">
+            + New Event
+          </Link>
+        )}
         <div className="hidden md:flex items-center gap-2 text-xs text-white/70">
           <span className="hidden sm:block max-w-[140px] truncate">{name}</span>
           <SignOutButton />
         </div>
-        <MobileNav isAdmin={isAdmin} name={name} />
+        <MobileNav isAdmin={isAdmin} canCreate={canCreate} name={name} />
       </div>
     </header>
   );
