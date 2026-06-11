@@ -117,3 +117,53 @@ export async function sendDecisionEmail(a: DecisionEmailArgs) {
     html: shell(subject, body),
   });
 }
+
+export interface BypassUsedEmailArgs {
+  to: string;                 // the code issuer
+  issuerName: string | null;
+  code: string;
+  codeLabel: string | null;
+  usedByName: string | null;
+  usedByEmail: string;
+  eventTitle: string;
+  eventId: string;
+  spaceName: string;
+  buildingName: string | null;
+  campusName: string | null;
+  whenLabel: string;
+  usesRemaining: string;      // "3 of 5 remaining" or "unlimited"
+}
+
+export async function sendBypassUsedEmail(a: BypassUsedEmailArgs) {
+  const subject = `Bypass code used: ${a.spaceName} for "${a.eventTitle}"`;
+
+  const banner = `<div style="background:#F9C84622;border:1px solid #F9C84688;border-radius:8px;padding:12px 16px;margin-bottom:20px;">
+       <p style="margin:0;font-size:14px;font-weight:bold;color:#8a6320;">Your bypass code was used to approve a within-48h booking</p>
+     </div>`;
+
+  const body = `
+    <p style="margin:0 0 16px;font-size:14px;color:#444;">Hi ${a.issuerName?.split(" ")[0] ?? "there"},</p>
+    ${banner}
+    <p style="margin:0 0 16px;font-size:14px;color:#444;">A booking was approved using a bypass code you issued. This is an on-call override that skips the 48-hour lead time and conflict checks.</p>
+    <table style="border-collapse:collapse;width:100%;margin-bottom:20px;">
+      ${row("Code", `<span style="font-family:monospace;font-weight:bold;">${a.code}</span>${a.codeLabel ? ` — ${a.codeLabel}` : ""}`)}
+      ${row("Used by", `${a.usedByName ?? a.usedByEmail}${a.usedByName ? ` (${a.usedByEmail})` : ""}`)}
+      ${row("Event", a.eventTitle)}
+      ${row("Space", `${a.spaceName}${a.buildingName ? ` — ${a.buildingName}` : ""}${a.campusName ? `, ${a.campusName}` : ""}`)}
+      ${row("When", a.whenLabel)}
+      ${row("Uses", a.usesRemaining)}
+    </table>
+    <a class="cta" href="${APP_URL}/events/${a.eventId}"
+       style="display:inline-block;background:${CERULEAN};color:#fff;text-decoration:none;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;">
+      View event
+    </a>
+    <p style="margin:16px 0 0;font-size:13px;color:#7a8694;">If this wasn't expected, you can deactivate the code from the Bypass Codes page in Admin.</p>
+  `;
+
+  await resend().emails.send({
+    from: FROM,
+    to: a.to,
+    subject,
+    html: shell(subject, body),
+  });
+}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { fmtRange } from "@/lib/dates";
 import { SETUP_STYLES } from "@/lib/types";
+import { anyWithinLeadTime, LEAD_TIME_HOURS } from "@/lib/bypass";
 
 interface Conflict {
   conflict_starts_at: string;
@@ -43,6 +44,7 @@ export default function AddSpaceModal({
   const [checking, setChecking] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [bypassCode, setBypassCode] = useState("");
 
   const isRecurring = occurrences.length > 1;
 
@@ -76,6 +78,13 @@ export default function AddSpaceModal({
 
   const blocked = (conflicts?.length ?? 0) > 0;
 
+  // 48h lead-time: true when any applicable occurrence starts too soon.
+  // Editing an already-approved override request shouldn't re-trigger the gate.
+  const withinLeadTime = useMemo(() => {
+    if (editRequest?.admin_override) return false;
+    return anyWithinLeadTime(proposedTimes.map((t) => t.starts_at));
+  }, [proposedTimes, editRequest]);
+
   const alreadyRequested = useMemo(() => {
     if (!spaceId) return false;
     return existingRequests.some(
@@ -92,11 +101,10 @@ export default function AddSpaceModal({
   async function submit() {
     setErr(null);
     if (!spaceId) { setErr("Pick a space."); return; }
-    if (blocked) return;
+    if (blocked && !withinLeadTime) return;
     if (alreadyRequested) { setErr("You already have a request for this space."); return; }
-    setBusy(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    const payload = {
+
+    const sharedPayload = {
       event_id: event.id,
       space_id: spaceId,
       scope,
@@ -109,8 +117,29 @@ export default function AddSpaceModal({
       tech_details: techNeeded ? techDetails.trim() || null : null,
       catering_needed: cateringNeeded,
       catering_details: cateringNeeded ? cateringDetails.trim() || null : null,
-      status: "pending" as const,
     };
+
+    // ── Within 48h → must use a bypass code (admin override) ──
+    if (withinLeadTime && !editRequest) {
+      if (!bypassCode.trim()) { setErr(`This booking is within ${LEAD_TIME_HOURS} hours. Enter an admin bypass code to proceed.`); return; }
+      setBusy(true);
+      const res = await fetch("/api/requests/bypass", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: bypassCode.trim(), payload: sharedPayload }),
+      });
+      const json = await res.json().catch(() => ({}));
+      setBusy(false);
+      if (!res.ok) { setErr(json.error ?? "Bypass failed."); return; }
+      router.refresh();
+      onClose();
+      return;
+    }
+
+    // ── Normal path (>48h) ──
+    setBusy(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    const payload = { ...sharedPayload, status: "pending" as const };
     const { error } = editRequest
       ? await supabase.from("space_requests").update(payload).eq("id", editRequest.id)
       : await supabase.from("space_requests").insert({ ...payload, requested_by: user!.id });
@@ -224,6 +253,27 @@ export default function AddSpaceModal({
           </div>
         ))}
 
+        {/* 48-hour lead-time → bypass code */}
+        {withinLeadTime && !editRequest && (
+          <div className="rounded-lg bg-sand/40 border border-sand px-4 py-3 space-y-2">
+            <p className="text-sm font-bold text-[#8a6320]">
+              ⚠ Within {LEAD_TIME_HOURS} hours — admin bypass required
+            </p>
+            <p className="text-xs text-[#8a6320]/90">
+              This booking starts less than {LEAD_TIME_HOURS} hours away. Enter an admin-issued
+              bypass code to approve it immediately. The code&apos;s issuer will be notified and the
+              use is logged.
+            </p>
+            <input
+              className="input font-mono tracking-wider uppercase"
+              value={bypassCode}
+              onChange={(e) => setBypassCode(e.target.value.toUpperCase())}
+              placeholder="XXXX-XXXX"
+              autoCapitalize="characters"
+            />
+          </div>
+        )}
+
         {/* Setup */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <div>
@@ -282,9 +332,13 @@ export default function AddSpaceModal({
 
         <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-1">
           <button onClick={onClose} className="btn-secondary py-2.5 sm:py-2">Cancel</button>
-          <button onClick={submit} disabled={busy || blocked || checking || !spaceId || alreadyRequested}
+          <button onClick={submit}
+            disabled={busy || checking || !spaceId || alreadyRequested || (blocked && !withinLeadTime) || (withinLeadTime && !editRequest && !bypassCode.trim())}
             className="btn-primary py-2.5 sm:py-2">
-            {busy ? "Submitting…" : editRequest ? "Save & resubmit for approval" : "Submit for approval"}
+            {busy ? "Submitting…"
+              : withinLeadTime && !editRequest ? "Approve with bypass code"
+              : editRequest ? "Save & resubmit for approval"
+              : "Submit for approval"}
           </button>
         </div>
       </div>

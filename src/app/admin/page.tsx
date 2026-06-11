@@ -67,12 +67,16 @@ export default async function AdminPage() {
 
         {/* Management links */}
         {isSuper && (
-          <div className="grid sm:grid-cols-3 gap-3 mb-8">
+          <div className="grid sm:grid-cols-2 gap-3 mb-8">
             <Link href="/admin/users" className="card p-4 hover:border-imperial/30 transition-colors">
               <h3 className="font-bold text-imperial">Users &amp; Roles</h3>
               <p className="text-xs text-ink/50 mt-1">
                 {roleCounts.viewer ?? 0} viewers · {(roleCounts.staff ?? 0)} staff · {(roleCounts.admin ?? 0) + (roleCounts.super_admin ?? 0)} admins
               </p>
+            </Link>
+            <Link href="/admin/bypass" className="card p-4 hover:border-imperial/30 transition-colors">
+              <h3 className="font-bold text-imperial">Bypass Codes</h3>
+              <p className="text-xs text-ink/50 mt-1">On-call overrides for within-48h bookings</p>
             </Link>
             <Link href="/admin/feedback" className="card p-4 hover:border-imperial/30 transition-colors">
               <h3 className="font-bold text-imperial">Feedback</h3>

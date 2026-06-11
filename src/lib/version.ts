@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.9";
+export const CURRENT_VERSION = "2.0";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -101,6 +101,16 @@ export const CHANGELOG: VersionEntry[] = [
       { type: "feature", text: "Users & Roles admin page — super admins can set each person's role (Viewer, Staff, Admin, Super Admin)" },
       { type: "feature", text: "Redesigned Admin dashboard with at-a-glance stats, a feedback inbox, an activity log, and a system diagnostics page" },
       { type: "security", text: "Users can no longer change their own role; role changes are restricted to super admins and recorded in the activity log" },
+    ],
+  },
+  {
+    version: "2.0",
+    date: "June 10, 2026",
+    changes: [
+      { type: "feature", text: "48-hour lead time — space requests must be submitted at least 48 hours before the event starts" },
+      { type: "feature", text: "Admin bypass codes — admins can issue on-call override codes that approve a within-48h booking instantly, regardless of space, time, or conflicts" },
+      { type: "feature", text: "Bypass code usage is logged and the issuing admin is emailed each time their code is used" },
+      { type: "feature", text: "New Bypass Codes admin page to issue, label, limit, expire, and deactivate codes, with a full usage log" },
     ],
   },
 ];
