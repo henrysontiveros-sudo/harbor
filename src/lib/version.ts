@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.27";
+export const CURRENT_VERSION = "1.28";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.28",
+    date: "August 7, 2026",
+    changes: [
+      { type: "security", text: "Added an internal security log (super admins only) that quietly records dead-link 404s and unauthorized access attempts — including unauthenticated hits on protected pages and blocked non-organization sign-ins." },
+    ],
+  },
   {
     version: "1.27",
     date: "August 7, 2026",

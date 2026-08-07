@@ -118,7 +118,10 @@ export default async function AdminPage() {
         />
 
         {isSuper && (
-          <div className="mt-8 text-right">
+          <div className="mt-8 text-right space-x-4">
+            <Link href="/admin/security" className="text-xs text-ink/30 hover:text-ink/50 transition-colors">
+              Security log →
+            </Link>
             <Link href="/admin/system" className="text-xs text-ink/30 hover:text-ink/50 transition-colors">
               System &amp; diagnostics →
             </Link>
