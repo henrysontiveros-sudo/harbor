@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "2.0";
+export const CURRENT_VERSION = "2.1";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "2.1",
+    date: "August 6, 2026",
+    changes: [
+      { type: "security", text: "Campus-admin assignments and removals are now recorded in the activity log, including any automatic Staff↔Admin role changes they trigger" },
+    ],
+  },
   {
     version: "1.0",
     date: "June 10, 2026",

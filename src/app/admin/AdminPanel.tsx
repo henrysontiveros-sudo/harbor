@@ -8,12 +8,13 @@ interface Campus { id: string; name: string; slug: string; active: boolean }
 interface Profile { id: string; email: string; full_name: string | null; role: string }
 
 export default function AdminPanel({
-  campuses, profiles, campusAdmins, isSuper,
+  campuses, profiles, campusAdmins, isSuper, currentUserEmail,
 }: {
   campuses: Campus[];
   profiles: Profile[];
   campusAdmins: { campus_id: string; user_id: string }[];
   isSuper: boolean;
+  currentUserEmail: string | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -21,6 +22,31 @@ export default function AdminPanel({
   const [campusId, setCampusId] = useState(campuses[0]?.id ?? "");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Record a campus-admin action in the audit log. Best-effort: a logging
+  // failure must never block the assignment itself.
+  async function audit(
+    action: "campus_admin_add" | "campus_admin_remove",
+    person: Profile,
+    campus: Campus | undefined,
+    roleChange?: { from: string; to: string },
+  ) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("audit_log").insert({
+      actor_id: user.id,
+      actor_email: currentUserEmail ?? user.email,
+      action,
+      target_type: "campus_admin",
+      target_id: person.id,
+      detail: {
+        email: person.email,
+        campus: campus?.name ?? campus?.id ?? null,
+        campus_id: campus?.id ?? null,
+        ...(roleChange ? { role_from: roleChange.from, role_to: roleChange.to } : {}),
+      },
+    });
+  }
 
   async function addAdmin(e: React.FormEvent) {
     e.preventDefault();
@@ -31,8 +57,13 @@ export default function AdminPanel({
     const { error } = await supabase.from("campus_admins").insert({
       campus_id: campusId, user_id: person.id,
     });
+    let roleChange: { from: string; to: string } | undefined;
     if (!error && person.role === "staff") {
-      await supabase.from("profiles").update({ role: "admin" }).eq("id", person.id);
+      const { error: roleErr } = await supabase.from("profiles").update({ role: "admin" }).eq("id", person.id);
+      if (!roleErr) roleChange = { from: "staff", to: "admin" };
+    }
+    if (!error) {
+      await audit("campus_admin_add", person, campuses.find((c) => c.id === campusId), roleChange);
     }
     setBusy(false);
     if (error) { setErr(error.message); return; }
@@ -48,8 +79,13 @@ export default function AdminPanel({
       (ca) => ca.user_id === user_id && !(ca.campus_id === campus_id)
     );
     const p = profiles.find((x) => x.id === user_id);
+    let roleChange: { from: string; to: string } | undefined;
     if (remaining.length === 0 && p?.role === "admin") {
-      await supabase.from("profiles").update({ role: "staff" }).eq("id", user_id);
+      const { error: roleErr } = await supabase.from("profiles").update({ role: "staff" }).eq("id", user_id);
+      if (!roleErr) roleChange = { from: "admin", to: "staff" };
+    }
+    if (p) {
+      await audit("campus_admin_remove", p, campuses.find((c) => c.id === campus_id), roleChange);
     }
     router.refresh();
   }

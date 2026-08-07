@@ -96,6 +96,7 @@ export default async function AdminPage() {
           profiles={profiles ?? []}
           campusAdmins={campusAdmins ?? []}
           isSuper={isSuper}
+          currentUserEmail={user!.email ?? null}
         />
 
         {isSuper && (
