@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/confirm", "/privacy", "/terms", "/api/cron"];
+const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/confirm", "/privacy", "/terms", "/api/cron", "/api/calendar"];
 const ALLOWED_DOMAINS = ["marinerschurch.org", "inov8-socal.tech"];
 
 export async function proxy(request: NextRequest) {

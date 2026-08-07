@@ -18,6 +18,7 @@ export default function MobileNav({ isAdmin, canCreate, canViewSetup, name }: { 
     { href: "/", label: "This Week" },
     { href: "/spaces", label: "Find a Space" },
     { href: "/events", label: "My Events" },
+    { href: "/calendar", label: "Calendar" },
     ...(canViewSetup ? [{ href: "/setup-sheet", label: "Setup Sheet" }] : []),
     ...(isAdmin
       ? [

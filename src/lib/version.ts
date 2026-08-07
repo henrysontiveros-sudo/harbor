@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.25";
+export const CURRENT_VERSION = "1.26";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.26",
+    date: "August 7, 2026",
+    changes: [
+      { type: "feature", text: "Live calendar subscriptions — subscribe to a always-updating calendar feed of your bookings, your ministries' bookings, or your congregations' bookings from the new Calendar page. Add it once to Apple Calendar, Google Calendar, or Outlook and it stays in sync automatically. Each link is private to you and can be reset at any time." },
+    ],
+  },
   {
     version: "1.25",
     date: "August 7, 2026",
