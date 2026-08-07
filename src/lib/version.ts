@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "2.2";
+export const CURRENT_VERSION = "2.3";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "2.3",
+    date: "August 6, 2026",
+    changes: [
+      { type: "improvement", text: "Browser tab icon (favicon) is now the Mariners circle-M on Imperial Blue, replacing the default placeholder — includes tab, bookmark, and Apple touch icon sizes" },
+    ],
+  },
   {
     version: "2.2",
     date: "August 6, 2026",
