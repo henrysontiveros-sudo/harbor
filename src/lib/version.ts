@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "2.6";
+export const CURRENT_VERSION = "2.7";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "2.7",
+    date: "August 6, 2026",
+    changes: [
+      { type: "fix", text: "Login and tab/app icons now use the actual Mariners circle-M logo (background removed from the original mark) instead of a redrawn version — matches the official logo" },
+    ],
+  },
   {
     version: "2.6",
     date: "August 6, 2026",

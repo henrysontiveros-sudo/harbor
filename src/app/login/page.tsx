@@ -36,7 +36,7 @@ function LoginInner() {
 
       {/* Mariners circle-M, top center above the login box */}
       <img
-        src="/mariners-m.svg"
+        src="/mariners-m.png"
         width={72}
         height={72}
         alt="Mariners Church"
