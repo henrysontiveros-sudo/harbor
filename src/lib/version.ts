@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.22";
+export const CURRENT_VERSION = "1.23";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.23",
+    date: "August 7, 2026",
+    changes: [
+      { type: "feature", text: "Bulk pre-assign people from CSV — admins can now upload a CSV of email, role, and Facilities access before anyone signs in. When each person first signs in with Google, their access is applied automatically, so there's no scramble to set permissions at sign-in. Includes an on-page CSV example with a download button. Only super admins can pre-assign the super_admin role." },
+    ],
+  },
   {
     version: "1.22",
     date: "August 7, 2026",

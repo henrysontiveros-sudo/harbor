@@ -65,6 +65,16 @@ export default async function AdminPage() {
           {isSuper && <StatCard label="Open feedback" value={openFeedback ?? 0} href="/admin/feedback" />}
         </div>
 
+        {/* Non-super admins: direct entry to bulk pre-assign (super admins get it in the grid below) */}
+        {!isSuper && (
+          <div className="mb-8">
+            <Link href="/admin/preassign" className="card p-4 hover:border-imperial/30 transition-colors block">
+              <h3 className="font-bold text-imperial">Bulk Pre-assign</h3>
+              <p className="text-xs text-ink/50 mt-1">Upload a CSV to set people&apos;s access before they sign in</p>
+            </Link>
+          </div>
+        )}
+
         {/* Management links */}
         {isSuper && (
           <div className="grid sm:grid-cols-2 gap-3 mb-8">
@@ -77,6 +87,10 @@ export default async function AdminPage() {
             <Link href="/admin/bypass" className="card p-4 hover:border-imperial/30 transition-colors">
               <h3 className="font-bold text-imperial">Bypass Codes</h3>
               <p className="text-xs text-ink/50 mt-1">On-call overrides for within-48h bookings</p>
+            </Link>
+            <Link href="/admin/preassign" className="card p-4 hover:border-imperial/30 transition-colors">
+              <h3 className="font-bold text-imperial">Bulk Pre-assign</h3>
+              <p className="text-xs text-ink/50 mt-1">Upload a CSV to set people&apos;s access before they sign in</p>
             </Link>
             <Link href="/admin/feedback" className="card p-4 hover:border-imperial/30 transition-colors">
               <h3 className="font-bold text-imperial">Feedback</h3>
