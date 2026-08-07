@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.21";
+export const CURRENT_VERSION = "1.22";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.22",
+    date: "August 7, 2026",
+    changes: [
+      { type: "improvement", text: "Removed the \"you receive this because…\" footer note from the daily facilities setup sheet email — cleaner run sheet." },
+    ],
+  },
   {
     version: "1.21",
     date: "August 7, 2026",

@@ -269,7 +269,6 @@ export async function sendFacilitiesSetupSheet(a: FacilitiesSetupSheetArgs) {
        style="display:inline-block;background:${CERULEAN};color:#fff;text-decoration:none;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;">
       Open / print full sheet
     </a>
-    <p style="margin:16px 0 0;font-size:12px;color:#9aa5b1;">You receive this because you're on the Facilities team for ${a.campusName}. It only sends on days with scheduled setups.</p>
   `;
 
   await resend().emails.send({
