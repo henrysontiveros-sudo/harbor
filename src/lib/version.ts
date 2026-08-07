@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "2.1";
+export const CURRENT_VERSION = "2.2";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "2.2",
+    date: "August 6, 2026",
+    changes: [
+      { type: "feature", text: "Daily approval digest — campus admins and super admins get one morning email listing the space requests pending their review, with event date, location, ministry, and who submitted it. Sends only on days with pending requests; each admin sees only their own campuses." },
+    ],
+  },
   {
     version: "2.1",
     date: "August 6, 2026",

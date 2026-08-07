@@ -118,6 +118,79 @@ export async function sendDecisionEmail(a: DecisionEmailArgs) {
   });
 }
 
+// ── Daily pending-approval digest to campus admins ───────────
+export interface DigestItem {
+  dateLabel: string;      // event date, e.g. "Sat, Jan 21"
+  timeLabel: string;      // e.g. "8a–12:30p" or "Recurring"
+  eventTitle: string;
+  eventId: string;
+  location: string;       // "Space — Building, Campus"
+  ministry: string;       // ministry or "—"
+  submitter: string;      // submitter name/email
+  submittedAgo: string;   // e.g. "2 days ago"
+}
+
+export interface PendingDigestArgs {
+  to: string;
+  adminName: string | null;
+  dateLabel: string;      // today's date, e.g. "Wednesday, August 6, 2026"
+  items: DigestItem[];    // scoped to this recipient's campuses
+}
+
+export async function sendPendingDigest(a: PendingDigestArgs) {
+  const n = a.items.length;
+  const subject = `${n} space request${n === 1 ? "" : "s"} pending your review`;
+
+  const rowsHtml = a.items
+    .map(
+      (it) => `
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #eef1f5;font-size:13px;color:${IMPERIAL};font-weight:bold;white-space:nowrap;vertical-align:top;">
+        ${it.dateLabel}<br/><span style="font-weight:normal;color:#7a8694;font-size:12px;">${it.timeLabel}</span>
+      </td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eef1f5;font-size:13px;color:#1E1C1D;vertical-align:top;">
+        <strong>${it.eventTitle}</strong><br/>
+        <span style="color:#7a8694;font-size:12px;">${it.location}</span>
+      </td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eef1f5;font-size:13px;color:#1E1C1D;vertical-align:top;">${it.ministry}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eef1f5;font-size:13px;color:#1E1C1D;vertical-align:top;">
+        ${it.submitter}<br/><span style="color:#7a8694;font-size:12px;">${it.submittedAgo}</span>
+      </td>
+    </tr>`
+    )
+    .join("");
+
+  const body = `
+    <p style="margin:0 0 16px;font-size:14px;color:#444;">Hi ${a.adminName?.split(" ")[0] ?? "there"},</p>
+    <p style="margin:0 0 20px;font-size:14px;color:#444;">
+      You have <strong>${n}</strong> space request${n === 1 ? "" : "s"} awaiting review as of ${a.dateLabel}.
+    </p>
+    <table style="border-collapse:collapse;width:100%;margin-bottom:20px;border:1px solid #eef1f5;border-radius:8px;overflow:hidden;">
+      <thead>
+        <tr style="background:#F7F9FB;">
+          <th align="left" style="padding:8px 12px;font-size:11px;color:#7a8694;text-transform:uppercase;letter-spacing:1px;">Event date</th>
+          <th align="left" style="padding:8px 12px;font-size:11px;color:#7a8694;text-transform:uppercase;letter-spacing:1px;">Event &amp; location</th>
+          <th align="left" style="padding:8px 12px;font-size:11px;color:#7a8694;text-transform:uppercase;letter-spacing:1px;">Ministry</th>
+          <th align="left" style="padding:8px 12px;font-size:11px;color:#7a8694;text-transform:uppercase;letter-spacing:1px;">Submitted by</th>
+        </tr>
+      </thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+    <a class="cta" href="${APP_URL}/approvals"
+       style="display:inline-block;background:${CERULEAN};color:#fff;text-decoration:none;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;">
+      Review requests
+    </a>
+    <p style="margin:16px 0 0;font-size:12px;color:#9aa5b1;">You receive this because you're an approver for one or more Mariners campuses. It only sends on days with pending requests.</p>
+  `;
+
+  await resend().emails.send({
+    from: FROM,
+    to: a.to,
+    subject,
+    html: shell(subject, body),
+  });
+}
+
 export interface BypassUsedEmailArgs {
   to: string;                 // the code issuer
   issuerName: string | null;
