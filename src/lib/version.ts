@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "2.5";
+export const CURRENT_VERSION = "2.6";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "2.6",
+    date: "August 6, 2026",
+    changes: [
+      { type: "improvement", text: "Rebuilt the Mariners circle-M as clean geometry — perfectly round ring, crisp M and j-hook — used consistently on the login screen and the browser tab/app icons (replaces the earlier jagged traced version)" },
+    ],
+  },
   {
     version: "2.5",
     date: "August 6, 2026",
