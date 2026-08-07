@@ -180,7 +180,7 @@ export async function sendPendingDigest(a: PendingDigestArgs) {
        style="display:inline-block;background:${CERULEAN};color:#fff;text-decoration:none;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;">
       Review requests
     </a>
-    <p style="margin:16px 0 0;font-size:12px;color:#9aa5b1;">You receive this because you're an approver for one or more Mariners campuses. It only sends on days with pending requests.</p>
+    <p style="margin:16px 0 0;font-size:12px;color:#9aa5b1;">You receive this because you're an approver for one or more Mariners congregations. It only sends on days with pending requests.</p>
   `;
 
   await resend().emails.send({

@@ -54,7 +54,7 @@ export default async function AdminPage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-black text-imperial mb-1">Admin</h1>
         <p className="text-sm text-ink/50 mb-6">
-          {isSuper ? "System overview and management." : "Your campus assignments."}
+          {isSuper ? "System overview and management." : "Your congregation assignments."}
         </p>
 
         {/* Stat grid */}
@@ -90,7 +90,7 @@ export default async function AdminPage() {
         )}
 
         {/* Campus admins management (existing) */}
-        <h2 className="text-lg font-bold text-imperial mb-3">Campus Admins</h2>
+        <h2 className="text-lg font-bold text-imperial mb-3">Congregation Admins</h2>
         <AdminPanel
           campuses={campuses ?? []}
           profiles={profiles ?? []}

@@ -100,13 +100,13 @@ export default function AdminPanel({
               value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div>
-            <label className="label">Campus</label>
+            <label className="label">Congregation</label>
             <select className="input" value={campusId} onChange={(e) => setCampusId(e.target.value)}>
               {campuses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <button type="submit" disabled={busy} className="btn-primary py-2.5 sm:py-2">
-            {busy ? "Adding…" : "Make campus admin"}
+            {busy ? "Adding…" : "Make congregation admin"}
           </button>
           {err && <p className="text-sm text-coral w-full">{err}</p>}
         </form>

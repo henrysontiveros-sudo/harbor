@@ -116,7 +116,7 @@ export default function SpaceFinder({
     <div>
       <div className="card p-4 mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:items-end">
         <div>
-          <label className="label">Campus</label>
+          <label className="label">Congregation</label>
           <select className="input" value={campusId} onChange={(e) => { setCampusId(e.target.value); setBusy(null); }}>
             {campuses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>

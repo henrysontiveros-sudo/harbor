@@ -55,7 +55,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-imperial">Bookings and Approvals</h2>
             <p>
               Submitting a space request does not guarantee a reservation. Requests
-              are subject to review and approval by campus administrators. Mariners
+              are subject to review and approval by congregation administrators. Mariners
               Church reserves the right to modify, reschedule, or cancel any booking.
             </p>
           </section>

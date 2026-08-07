@@ -24,7 +24,7 @@ const ROLE_BADGE: Record<UserRole, string> = {
 const ROLE_HELP: Record<UserRole, string> = {
   viewer: "Can view schedules and spaces. Cannot create events or requests.",
   staff: "Can create events and submit space requests.",
-  admin: "Staff abilities, plus approve/deny requests (assign campuses below).",
+  admin: "Staff abilities, plus approve/deny requests (assign congregations below).",
   super_admin: "Full access, including user management.",
 };
 
@@ -161,7 +161,7 @@ export default function UsersClient({
           ))}
         </ul>
         <p className="text-xs text-ink/40 mt-3">
-          To grant a campus admin their approval queue, assign them a campus on the{" "}
+          To grant a congregation admin their approval queue, assign them a congregation on the{" "}
           <a href="/admin" className="text-cerulean underline">Admin</a> page after setting their role to Admin.
         </p>
       </div>

@@ -91,7 +91,7 @@ export default async function SystemPage() {
               <Row label="Events" value={String(eventCount ?? 0)} />
               <Row label="Space requests" value={String(requestCount ?? 0)} />
               <Row label="Spaces" value={String(spaceCount ?? 0)} />
-              <Row label="Campuses" value={String(campusCount ?? 0)} />
+              <Row label="Congregations" value={String(campusCount ?? 0)} />
               <Row label="Audit entries" value={String(auditCount ?? 0)} />
             </div>
           </div>

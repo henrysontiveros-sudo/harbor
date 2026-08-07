@@ -97,7 +97,7 @@ export default function NewEventForm({ campuses }: { campuses: Campus[] }) {
             placeholder="e.g. NextGen, Worship, Outreach" />
         </div>
         <div>
-          <label className="label">Campus *</label>
+          <label className="label">Congregation *</label>
           <select className="input" value={campusId} onChange={(e) => setCampusId(e.target.value)}>
             {campuses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>

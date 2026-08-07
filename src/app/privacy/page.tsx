@@ -51,7 +51,7 @@ export default function PrivacyPage() {
             <ul className="list-disc pl-6 space-y-1.5">
               <li>To authenticate you and maintain your session</li>
               <li>To create, display, and manage space requests and events</li>
-              <li>To route requests to the appropriate campus administrators for approval</li>
+              <li>To route requests to the appropriate congregation administrators for approval</li>
               <li>To send transactional email notifications about your requests</li>
               <li>To restrict access to authorized Mariners Church accounts</li>
             </ul>

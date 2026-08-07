@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "2.8";
+export const CURRENT_VERSION = "1.19";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -15,35 +15,43 @@ export interface VersionEntry {
 
 export const CHANGELOG: VersionEntry[] = [
   {
-    version: "2.8",
+    version: "1.19",
+    date: "August 6, 2026",
+    changes: [
+      { type: "improvement", text: "Renamed \"campus\" to \"congregation\" throughout the app — every label, filter, form, and email now reads \"congregation(s)\" to match Mariners' language" },
+      { type: "fix", text: "Fixed the Mariners logo in all notification emails — removed the black box behind the mark; the email header now shows the clean white circle-M" },
+    ],
+  },
+  {
+    version: "1.18",
     date: "August 6, 2026",
     changes: [
       { type: "improvement", text: "Smoothed the Mariners circle-M logo edges — removed the stair-stepping/jaggies on the login screen and tab/app icons using a supersampled edge cleanup while keeping the authentic official mark" },
     ],
   },
   {
-    version: "2.7",
+    version: "1.17",
     date: "August 6, 2026",
     changes: [
       { type: "fix", text: "Login and tab/app icons now use the actual Mariners circle-M logo (background removed from the original mark) instead of a redrawn version — matches the official logo" },
     ],
   },
   {
-    version: "2.6",
+    version: "1.16",
     date: "August 6, 2026",
     changes: [
       { type: "improvement", text: "Rebuilt the Mariners circle-M as clean geometry — perfectly round ring, crisp M and j-hook — used consistently on the login screen and the browser tab/app icons (replaces the earlier jagged traced version)" },
     ],
   },
   {
-    version: "2.5",
+    version: "1.15",
     date: "August 6, 2026",
     changes: [
       { type: "improvement", text: "Login logo is now a clean white vector Mariners circle-M with no background box (replaces the boxed raster image)" },
     ],
   },
   {
-    version: "2.4",
+    version: "1.14",
     date: "August 6, 2026",
     changes: [
       { type: "improvement", text: "Login screen now shows the Mariners circle-M above the sign-in box" },
@@ -51,24 +59,24 @@ export const CHANGELOG: VersionEntry[] = [
     ],
   },
   {
-    version: "2.3",
+    version: "1.13",
     date: "August 6, 2026",
     changes: [
       { type: "improvement", text: "Browser tab icon (favicon) is now the Mariners circle-M on Imperial Blue, replacing the default placeholder — includes tab, bookmark, and Apple touch icon sizes" },
     ],
   },
   {
-    version: "2.2",
+    version: "1.12",
     date: "August 6, 2026",
     changes: [
-      { type: "feature", text: "Daily approval digest — campus admins and super admins get one morning email listing the space requests pending their review, with event date, location, ministry, and who submitted it. Sends only on days with pending requests; each admin sees only their own campuses." },
+      { type: "feature", text: "Daily approval digest — congregation admins and super admins get one morning email listing the space requests pending their review, with event date, location, ministry, and who submitted it. Sends only on days with pending requests; each admin sees only their own congregations." },
     ],
   },
   {
-    version: "2.1",
+    version: "1.11",
     date: "August 6, 2026",
     changes: [
-      { type: "security", text: "Campus-admin assignments and removals are now recorded in the activity log, including any automatic Staff↔Admin role changes they trigger" },
+      { type: "security", text: "Congregation-admin assignments and removals are now recorded in the activity log, including any automatic Staff↔Admin role changes they trigger" },
     ],
   },
   {
@@ -79,11 +87,11 @@ export const CHANGELOG: VersionEntry[] = [
       { type: "feature", text: "Recurring events: daily, weekly, biweekly, and monthly schedules" },
       { type: "feature", text: "Space requests with tables, chairs, setup style, placement notes, tech/AV, and catering" },
       { type: "feature", text: "Live conflict detection — double-booked spaces are flagged and blocked before submission" },
-      { type: "feature", text: "This Week view — browse all approved events across campus" },
-      { type: "feature", text: "Find a Space — free/busy checker by campus, time window, and capacity" },
-      { type: "feature", text: "Per-campus admin approvals with approve/deny reasons" },
+      { type: "feature", text: "This Week view — browse all approved events across the congregation" },
+      { type: "feature", text: "Find a Space — free/busy checker by congregation, time window, and capacity" },
+      { type: "feature", text: "Per-congregation admin approvals with approve/deny reasons" },
       { type: "feature", text: "Event editors — add collaborators who can manage your event" },
-      { type: "feature", text: "All 6 campuses (Irvine, Mission Viejo, Santa Ana, Trabuco Canyon, Huntington Beach, Anaheim) with 115 Irvine spaces seeded" },
+      { type: "feature", text: "All 6 congregations (Irvine, Mission Viejo, Santa Ana, Trabuco Canyon, Huntington Beach, Anaheim) with 115 Irvine spaces seeded" },
       { type: "feature", text: "Mariners branding — Gotham typography, brand palette, and date formatting" },
       { type: "feature", text: "Login restricted to marinerschurch.org via email magic link" },
     ],
@@ -110,7 +118,7 @@ export const CHANGELOG: VersionEntry[] = [
     changes: [
       { type: "feature", text: "Email notifications — requesters now receive an email when their space request is approved or denied" },
       { type: "feature", text: "Edit space requests — modify a pending or approved request (resubmits for approval), or edit & resubmit a denied one" },
-      { type: "feature", text: "Setup Sheet — printable day-of run sheet per campus with setups, tech, and catering grouped by building" },
+      { type: "feature", text: "Setup Sheet — printable day-of run sheet per congregation with setups, tech, and catering grouped by building" },
     ],
   },
   {
@@ -161,7 +169,7 @@ export const CHANGELOG: VersionEntry[] = [
     ],
   },
   {
-    version: "2.0",
+    version: "1.10",
     date: "June 10, 2026",
     changes: [
       { type: "feature", text: "48-hour lead time — space requests must be submitted at least 48 hours before the event starts" },

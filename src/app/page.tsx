@@ -120,7 +120,7 @@ export default async function WeekPage({
             href={qs({ campus: undefined })}
             className={`badge px-3 py-1.5 ${!campusSlug ? "bg-imperial text-white" : "bg-white border border-ink/15 text-ink/70 hover:border-imperial/40"}`}
           >
-            All Campuses
+            All Congregations
           </Link>
           {campuses?.map((c) => (
             <Link
