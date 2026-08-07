@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Nav from "@/components/Nav";
 import { createClient } from "@/lib/supabase/server";
 import { fmtTimeRange, fmtDayFull, laDateKey } from "@/lib/dates";
+import { canViewSetupSheet } from "@/lib/types";
 import PrintButton from "./PrintButton";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +35,13 @@ export default async function SetupSheetPage({
 }) {
   const { campus: campusSlug, date } = await searchParams;
   const supabase = await createClient();
+
+  // Access control: only Facilities-flagged users + admins/super admins.
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login?next=/setup-sheet");
+  const { data: me } = await supabase
+    .from("profiles").select("role, facilities").eq("id", user.id).single();
+  if (!canViewSetupSheet(me?.role, me?.facilities)) redirect("/");
 
   const { data: campuses } = await supabase
     .from("campuses")

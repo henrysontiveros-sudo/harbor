@@ -21,6 +21,15 @@ export interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   role: UserRole;
+  facilities?: boolean;
+}
+
+/** Roles that can always see the Setup Sheet (facilities run sheet). */
+export function canViewSetupSheet(
+  role: UserRole | null | undefined,
+  facilities: boolean | null | undefined
+): boolean {
+  return facilities === true || role === "admin" || role === "super_admin";
 }
 
 export interface Campus {

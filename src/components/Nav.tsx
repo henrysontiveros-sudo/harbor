@@ -11,15 +11,17 @@ export default async function Nav() {
 
   let isAdmin = false;
   let canCreate = false;
+  let canViewSetup = false;
   let name = "";
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("role, full_name")
+      .select("role, full_name, facilities")
       .eq("id", user.id)
       .single();
     isAdmin = profile?.role === "admin" || profile?.role === "super_admin";
     canCreate = ["staff", "admin", "super_admin"].includes(profile?.role ?? "");
+    canViewSetup = isAdmin || profile?.facilities === true;
     name = profile?.full_name ?? user.email ?? "";
     if (!isAdmin) {
       const { count } = await supabase
@@ -27,6 +29,7 @@ export default async function Nav() {
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id);
       isAdmin = (count ?? 0) > 0;
+      if (isAdmin) canViewSetup = true;
     }
   }
 
@@ -46,9 +49,11 @@ export default async function Nav() {
           <Link href="/events" className="px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors">
             My Events
           </Link>
-          <Link href="/setup-sheet" className="px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors">
-            Setup Sheet
-          </Link>
+          {canViewSetup && (
+            <Link href="/setup-sheet" className="px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors">
+              Setup Sheet
+            </Link>
+          )}
           {isAdmin && (
             <Link href="/approvals" className="px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors">
               Approvals
@@ -69,7 +74,7 @@ export default async function Nav() {
           <span className="hidden sm:block max-w-[140px] truncate">{name}</span>
           <SignOutButton />
         </div>
-        <MobileNav isAdmin={isAdmin} canCreate={canCreate} name={name} />
+        <MobileNav isAdmin={isAdmin} canCreate={canCreate} canViewSetup={canViewSetup} name={name} />
       </div>
     </header>
   );

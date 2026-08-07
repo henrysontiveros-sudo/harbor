@@ -9,6 +9,7 @@ interface UserRow {
   email: string;
   full_name: string | null;
   role: UserRole;
+  facilities: boolean;
   created_at: string;
 }
 
@@ -83,6 +84,27 @@ export default function UsersClient({
     }
   }
 
+  async function toggleFacilities(id: string, facilities: boolean) {
+    setBusyId(id);
+    setErr(null);
+    try {
+      const res = await fetch(`/api/admin/users/${id}/facilities`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ facilities }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error ?? "Failed to update facilities access");
+      }
+      router.refresh();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Failed to update facilities access");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   return (
     <div className="space-y-4">
       {/* Role summary */}
@@ -141,6 +163,19 @@ export default function UsersClient({
                     ))}
                   </select>
                 )}
+                <label
+                  className="flex items-center gap-1.5 text-xs text-ink/60 cursor-pointer select-none pl-1"
+                  title="Grants access to the Setup Sheet (facilities run sheet), even without an admin role."
+                >
+                  <input
+                    type="checkbox"
+                    checked={p.facilities}
+                    disabled={busyId === p.id}
+                    onChange={(e) => toggleFacilities(p.id, e.target.checked)}
+                    className="h-4 w-4 rounded border-ink/25 text-imperial focus:ring-imperial/30 disabled:opacity-50"
+                  />
+                  Facilities
+                </label>
               </div>
             </div>
           );

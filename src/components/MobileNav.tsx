@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SignOutButton from "./SignOutButton";
 
-export default function MobileNav({ isAdmin, canCreate, name }: { isAdmin: boolean; canCreate: boolean; name: string }) {
+export default function MobileNav({ isAdmin, canCreate, canViewSetup, name }: { isAdmin: boolean; canCreate: boolean; canViewSetup: boolean; name: string }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -18,7 +18,7 @@ export default function MobileNav({ isAdmin, canCreate, name }: { isAdmin: boole
     { href: "/", label: "This Week" },
     { href: "/spaces", label: "Find a Space" },
     { href: "/events", label: "My Events" },
-    { href: "/setup-sheet", label: "Setup Sheet" },
+    ...(canViewSetup ? [{ href: "/setup-sheet", label: "Setup Sheet" }] : []),
     ...(isAdmin
       ? [
           { href: "/approvals", label: "Approvals" },

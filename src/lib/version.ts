@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.19";
+export const CURRENT_VERSION = "1.20";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.20",
+    date: "August 6, 2026",
+    changes: [
+      { type: "feature", text: "Facilities access — the Setup Sheet (day-of run sheet, grouped by building) is now restricted to Facilities team members plus admins. Super admins grant access with a per-person \"Facilities\" checkbox on the Users & Roles page." },
+    ],
+  },
   {
     version: "1.19",
     date: "August 6, 2026",
