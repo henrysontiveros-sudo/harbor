@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "2.3";
+export const CURRENT_VERSION = "2.4";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,14 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "2.4",
+    date: "August 6, 2026",
+    changes: [
+      { type: "improvement", text: "Login screen now shows the Mariners circle-M above the sign-in box" },
+      { type: "improvement", text: "The version badge and change log are now visible only to signed-in users (hidden on the login and public policy pages)" },
+    ],
+  },
   {
     version: "2.3",
     date: "August 6, 2026",

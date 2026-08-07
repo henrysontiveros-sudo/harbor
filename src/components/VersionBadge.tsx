@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { CURRENT_VERSION, CHANGELOG, type ChangeType } from "@/lib/version";
 
 const TYPE_CONFIG: Record<ChangeType, { label: string; cls: string }> = {
@@ -13,9 +13,25 @@ const TYPE_CONFIG: Record<ChangeType, { label: string; cls: string }> = {
 
 export default function VersionBadge() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  const [authed, setAuthed] = useState(false);
 
-  if (pathname === "/login") return null;
+  // Only show the version badge / change log to signed-in users.
+  useEffect(() => {
+    const supabase = createClient();
+    let active = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (active) setAuthed(!!data.user);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAuthed(!!session?.user);
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  if (!authed) return null;
 
   return (
     <>

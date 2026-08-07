@@ -25,7 +25,7 @@ function LoginInner() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-imperial relative overflow-hidden px-4 py-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-imperial relative overflow-hidden px-4 py-8">
       {/* subtle wave bands */}
       <div className="absolute inset-x-0 bottom-0 h-64 opacity-20"
         style={{
@@ -33,6 +33,16 @@ function LoginInner() {
             "radial-gradient(120% 60% at 50% 100%, #7BC7CF 0%, transparent 60%)",
         }}
       />
+
+      {/* Mariners circle-M, top center above the login box */}
+      <img
+        src="/mariners-m-header.png"
+        width={72}
+        height={72}
+        alt="Mariners Church"
+        className="relative z-10 mb-6 w-16 h-16 sm:w-[72px] sm:h-[72px]"
+      />
+
       <div className="card relative z-10 w-full max-w-md p-6 sm:p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-black text-imperial tracking-tight">
