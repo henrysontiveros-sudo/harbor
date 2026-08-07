@@ -7,15 +7,24 @@ import { laWallTimeToISO } from "@/lib/dates";
 import { generateOccurrences, specToRRuleString, RecurrenceSpec } from "@/lib/recurrence";
 
 interface Campus { id: string; name: string; slug: string }
+interface Group { id: string; name: string }
 
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-export default function NewEventForm({ campuses }: { campuses: Campus[] }) {
+export default function NewEventForm({
+  campuses,
+  groups,
+  isAdmin,
+}: {
+  campuses: Campus[];
+  groups: Group[];
+  isAdmin: boolean;
+}) {
   const router = useRouter();
   const supabase = createClient();
 
   const [title, setTitle] = useState("");
-  const [ministry, setMinistry] = useState("");
+  const [groupId, setGroupId] = useState(groups[0]?.id ?? "");
   const [description, setDescription] = useState("");
   const [campusId, setCampusId] = useState(campuses[0]?.id ?? "");
   const [date, setDate] = useState("");
@@ -39,18 +48,25 @@ export default function NewEventForm({ campuses }: { campuses: Campus[] }) {
     if (!date || !startTime || !endTime) { setErr("Date and times are required."); return; }
     if (endTime <= startTime) { setErr("End time must be after start time."); return; }
     if (freq !== "none" && !until) { setErr("Pick an end date for the recurrence."); return; }
+    // Non-admins must book on behalf of a group they belong to.
+    if (!isAdmin && !groupId) { setErr("Select the group you're booking for."); return; }
 
     setBusy(true);
     const startsISO = laWallTimeToISO(`${date}T${startTime}`);
     const endsISO = laWallTimeToISO(`${date}T${endTime}`);
     const spec: RecurrenceSpec = { freq, byweekday, until: until || null };
 
+    const selectedGroup = groups.find((g) => g.id === groupId) ?? null;
+
     const { data: { user } } = await supabase.auth.getUser();
     const { data: event, error } = await supabase
       .from("events")
       .insert({
         title: title.trim(),
-        ministry: ministry.trim() || null,
+        group_id: groupId || null,
+        // Mirror the group name into ministry for display continuity across
+        // the calendar / digest / setup sheet / approvals.
+        ministry: selectedGroup?.name ?? null,
         description: description.trim() || null,
         campus_id: campusId,
         created_by: user!.id,
@@ -92,9 +108,16 @@ export default function NewEventForm({ campuses }: { campuses: Campus[] }) {
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="label">Ministry / team</label>
-          <input className="input" value={ministry} onChange={(e) => setMinistry(e.target.value)}
-            placeholder="e.g. NextGen, Worship, Outreach" />
+          <label className="label">Group / ministry *</label>
+          <select className="input" value={groupId} onChange={(e) => setGroupId(e.target.value)} required={!isAdmin}>
+            {isAdmin && <option value="">— General (no specific group) —</option>}
+            {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+          </select>
+          <p className="text-xs text-ink/40 mt-1">
+            {isAdmin
+              ? "As an admin you can book for any ministry."
+              : "You can book only for the groups you're assigned to."}
+          </p>
         </div>
         <div>
           <label className="label">Congregation *</label>

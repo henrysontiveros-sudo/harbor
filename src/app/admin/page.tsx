@@ -92,6 +92,10 @@ export default async function AdminPage() {
               <h3 className="font-bold text-imperial">Bulk Pre-assign</h3>
               <p className="text-xs text-ink/50 mt-1">Upload a CSV to set people&apos;s access before they sign in</p>
             </Link>
+            <Link href="/admin/groups" className="card p-4 hover:border-imperial/30 transition-colors">
+              <h3 className="font-bold text-imperial">Groups &amp; Ministries</h3>
+              <p className="text-xs text-ink/50 mt-1">Assign staff to the ministries they can book for</p>
+            </Link>
             <Link href="/admin/feedback" className="card p-4 hover:border-imperial/30 transition-colors">
               <h3 className="font-bold text-imperial">Feedback</h3>
               <p className="text-xs text-ink/50 mt-1">Review bug reports &amp; suggestions</p>

@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.23";
+export const CURRENT_VERSION = "1.24";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.24",
+    date: "August 7, 2026",
+    changes: [
+      { type: "feature", text: "Groups & ministries — staff can now only book for the ministries they're assigned to. Admins create groups and assign individual staff accounts to them (a person can belong to several). When booking, staff pick from their own groups; someone with no group can't create bookings. This prevents shared department emails from being used to submit requests. Enforced at the database level. Admins and super admins can still book for any ministry." },
+    ],
+  },
   {
     version: "1.23",
     date: "August 7, 2026",
