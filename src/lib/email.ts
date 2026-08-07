@@ -191,6 +191,95 @@ export async function sendPendingDigest(a: PendingDigestArgs) {
   });
 }
 
+// ── Daily facilities setup sheet (day-of run sheet) ───────────
+export interface SetupSheetRow {
+  timeLabel: string;              // e.g. "8:00a–12:30p"
+  spaceName: string;
+  groupName?: string | null;      // optional sub-label under the space
+  eventTitle: string;
+  ministry?: string | null;
+  contact?: string | null;        // requester name/email
+  logistics?: string | null;      // "8 tables · 48 chairs · Rounds"
+  tech?: string | null;           // tech details, or null if not needed
+  catering?: string | null;       // catering details, or null if not needed
+  notes?: string | null;          // setup notes
+}
+
+export interface SetupSheetBuilding {
+  building: string;
+  rows: SetupSheetRow[];
+}
+
+export interface FacilitiesSetupSheetArgs {
+  to: string;
+  recipientName: string | null;
+  campusName: string;             // "Irvine"
+  dateLabel: string;              // "Friday, August 7, 2026"
+  buildings: SetupSheetBuilding[];
+  totals: { setups: number; tables: number; chairs: number };
+  sheetUrl: string;               // deep link to /setup-sheet
+}
+
+export async function sendFacilitiesSetupSheet(a: FacilitiesSetupSheetArgs) {
+  const n = a.totals.setups;
+  const subject = `Setup sheet — ${a.campusName}, ${a.dateLabel} (${n} setup${n === 1 ? "" : "s"})`;
+
+  const buildingsHtml = a.buildings
+    .map(
+      (b) => `
+    <div style="margin-bottom:22px;">
+      <p style="margin:0 0 8px;font-size:11px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#7a8694;">${b.building}</p>
+      <table style="border-collapse:collapse;width:100%;border:1px solid #eef1f5;border-radius:8px;overflow:hidden;">
+        <tbody>
+        ${b.rows
+          .map(
+            (r) => `
+          <tr>
+            <td style="padding:12px 14px;border-bottom:1px solid #eef1f5;vertical-align:top;">
+              <div style="font-size:14px;color:#1E1C1D;">
+                <span style="color:${CERULEAN};font-weight:bold;white-space:nowrap;">${r.timeLabel}</span>
+                &nbsp;<strong>${r.spaceName}</strong>${r.groupName ? ` <span style="color:#9aa5b1;font-size:12px;">${r.groupName}</span>` : ""}
+                <span style="color:#7a8694;">— ${r.eventTitle}</span>${r.ministry ? ` <span style="color:#9aa5b1;font-size:12px;">(${r.ministry})</span>` : ""}
+              </div>
+              ${r.logistics ? `<div style="margin-top:5px;font-size:13px;font-weight:600;color:#1E1C1D;">${r.logistics}</div>` : ""}
+              ${r.tech ? `<div style="margin-top:3px;font-size:13px;color:${CERULEAN};">Tech: ${r.tech}</div>` : ""}
+              ${r.catering ? `<div style="margin-top:3px;font-size:13px;color:#8a6320;">Catering: ${r.catering}</div>` : ""}
+              ${r.notes ? `<div style="margin-top:6px;font-size:13px;color:#444;background:#F7F4EC;border:1px solid #ece3cf;border-radius:6px;padding:7px 10px;">${r.notes}</div>` : ""}
+              ${r.contact ? `<div style="margin-top:6px;font-size:11px;color:#9aa5b1;">Requested by ${r.contact}</div>` : ""}
+            </td>
+          </tr>`
+          )
+          .join("")}
+        </tbody>
+      </table>
+    </div>`
+    )
+    .join("");
+
+  const totalsBits: string[] = [`${n} setup${n === 1 ? "" : "s"}`];
+  if (a.totals.tables > 0) totalsBits.push(`${a.totals.tables} tables`);
+  if (a.totals.chairs > 0) totalsBits.push(`${a.totals.chairs} chairs`);
+
+  const body = `
+    <p style="margin:0 0 16px;font-size:14px;color:#444;">Hi ${a.recipientName?.split(" ")[0] ?? "team"},</p>
+    <p style="margin:0 0 4px;font-size:14px;color:#444;">Here's today's run sheet for <strong>${a.campusName}</strong>.</p>
+    <p style="margin:0 0 20px;font-size:13px;color:#7a8694;">${a.dateLabel} · ${totalsBits.join(" · ")}</p>
+    ${buildingsHtml}
+    <a class="cta" href="${a.sheetUrl}"
+       style="display:inline-block;background:${CERULEAN};color:#fff;text-decoration:none;font-size:13px;font-weight:bold;padding:10px 20px;border-radius:8px;">
+      Open / print full sheet
+    </a>
+    <p style="margin:16px 0 0;font-size:12px;color:#9aa5b1;">You receive this because you're on the Facilities team for ${a.campusName}. It only sends on days with scheduled setups.</p>
+  `;
+
+  await resend().emails.send({
+    from: FROM,
+    to: a.to,
+    subject,
+    html: shell(subject, body),
+  });
+}
+
 export interface BypassUsedEmailArgs {
   to: string;                 // the code issuer
   issuerName: string | null;

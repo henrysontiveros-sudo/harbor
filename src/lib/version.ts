@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.20";
+export const CURRENT_VERSION = "1.21";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.21",
+    date: "August 7, 2026",
+    changes: [
+      { type: "feature", text: "Daily facilities setup sheet email — the Facilities team now gets today's run sheet (approved setups grouped by building, with tables/chairs/style, tech, catering, and notes) emailed automatically each morning at 5am PT, in time for setup. Sends only on days with scheduled setups; goes to Facilities team members for the Irvine congregation." },
+    ],
+  },
   {
     version: "1.20",
     date: "August 6, 2026",
