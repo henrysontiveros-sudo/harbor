@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "2.4";
+export const CURRENT_VERSION = "2.5";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "2.5",
+    date: "August 6, 2026",
+    changes: [
+      { type: "improvement", text: "Login logo is now a clean white vector Mariners circle-M with no background box (replaces the boxed raster image)" },
+    ],
+  },
   {
     version: "2.4",
     date: "August 6, 2026",
