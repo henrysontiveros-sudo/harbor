@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.26";
+export const CURRENT_VERSION = "1.27";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.27",
+    date: "August 7, 2026",
+    changes: [
+      { type: "improvement", text: "Broken or expired links (for example, a link to an event that no longer exists) now send you back to the home page instead of showing a \"page not found\" screen." },
+    ],
+  },
   {
     version: "1.26",
     date: "August 7, 2026",
