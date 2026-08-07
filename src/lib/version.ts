@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.24";
+export const CURRENT_VERSION = "1.25";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -14,6 +14,13 @@ export interface VersionEntry {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.25",
+    date: "August 7, 2026",
+    changes: [
+      { type: "improvement", text: "The weekly schedule now opens to the Irvine congregation by default, with every other congregation one tap away and an \"All Congregations\" option. Everyone can still view any congregation." },
+    ],
+  },
   {
     version: "1.24",
     date: "August 7, 2026",

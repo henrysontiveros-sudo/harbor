@@ -67,7 +67,15 @@ export default async function WeekPage({
   const { data: occRows } = await query;
   let occs = (occRows ?? []) as unknown as OccRow[];
 
-  const selectedCampus = campuses?.find((c) => c.slug === campusSlug);
+  // Congregation view: default to Irvine when no explicit choice. "All
+  // Congregations" is opt-in via ?campus=all. Everyone can still view any
+  // congregation — Irvine simply loads first.
+  const showAll = campusSlug === "all";
+  const defaultSlug = "irvine";
+  const effectiveSlug = campusSlug ?? defaultSlug;
+  const selectedCampus = showAll
+    ? undefined
+    : campuses?.find((c) => c.slug === effectiveSlug);
   if (selectedCampus) {
     occs = occs.filter((o) => o.events?.campus_id === selectedCampus.id);
   }
@@ -117,8 +125,8 @@ export default async function WeekPage({
         {/* Campus filter */}
         <div className="flex flex-wrap gap-2 mb-8">
           <Link
-            href={qs({ campus: undefined })}
-            className={`badge px-3 py-1.5 ${!campusSlug ? "bg-imperial text-white" : "bg-white border border-ink/15 text-ink/70 hover:border-imperial/40"}`}
+            href={qs({ campus: "all" })}
+            className={`badge px-3 py-1.5 ${showAll ? "bg-imperial text-white" : "bg-white border border-ink/15 text-ink/70 hover:border-imperial/40"}`}
           >
             All Congregations
           </Link>
@@ -126,7 +134,7 @@ export default async function WeekPage({
             <Link
               key={c.id}
               href={qs({ campus: c.slug })}
-              className={`badge px-3 py-1.5 ${campusSlug === c.slug ? "bg-imperial text-white" : "bg-white border border-ink/15 text-ink/70 hover:border-imperial/40"}`}
+              className={`badge px-3 py-1.5 ${!showAll && effectiveSlug === c.slug ? "bg-imperial text-white" : "bg-white border border-ink/15 text-ink/70 hover:border-imperial/40"}`}
             >
               {c.name}
             </Link>
