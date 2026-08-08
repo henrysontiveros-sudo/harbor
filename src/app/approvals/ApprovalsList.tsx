@@ -7,7 +7,7 @@ import { fmtRange } from "@/lib/dates";
 import { describeRecurrence } from "@/lib/recurrence";
 import StatusBadge from "@/components/StatusBadge";
 
-export default function ApprovalsList({ pending, recent }: { pending: any[]; recent: any[] }) {
+export default function ApprovalsList({ pending, recent, pendingResources, recentResources }: { pending: any[]; recent: any[]; pendingResources: any[]; recentResources: any[] }) {
   const router = useRouter();
   const [denyingId, setDenyingId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
@@ -16,6 +16,24 @@ export default function ApprovalsList({ pending, recent }: { pending: any[]; rec
   async function decide(id: string, status: "approved" | "denied") {
     setBusy(id);
     const res = await fetch(`/api/requests/${id}/decide`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status, denial_reason: status === "denied" ? reason.trim() || null : null }),
+    });
+    if (!res.ok) {
+      alert("Couldn't save the decision. Please try again.");
+      setBusy(null);
+      return;
+    }
+    setBusy(null);
+    setDenyingId(null);
+    setReason("");
+    router.refresh();
+  }
+
+  async function decideResource(id: string, status: "approved" | "denied") {
+    setBusy(id);
+    const res = await fetch(`/api/resource-requests/${id}/decide`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status, denial_reason: status === "denied" ? reason.trim() || null : null }),
@@ -93,11 +111,76 @@ export default function ApprovalsList({ pending, recent }: { pending: any[]; rec
     );
   }
 
+  function ResourceCard({ r, actions }: { r: any; actions: boolean }) {
+    const isVehicle = r.resources?.category === "vehicle";
+    return (
+      <div className="card px-4 py-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="font-medium">{r.resources?.name}</span>
+          <span className="text-xs text-ink/40">
+            {isVehicle ? "Vehicle" : "Equipment"}
+            {r.events?.campuses?.name ? ` · ${r.events.campuses.name}` : ""}
+          </span>
+          {!isVehicle && r.quantity > 1 && (
+            <span className="badge bg-cerulean/5 text-cerulean">×{r.quantity}</span>
+          )}
+          {r.resources?.is_billable && (
+            <span className="badge bg-[#8a6320]/10 text-[#8a6320]">Billable</span>
+          )}
+          {!actions && <StatusBadge status={r.status} />}
+        </div>
+        <div className="text-sm text-ink/70 mt-1">
+          <Link href={`/events/${r.events?.id}`} className="text-cerulean hover:underline">
+            {r.events?.title}
+          </Link>
+          <span className="text-xs text-ink/50">
+            {" — "}{fmtRange(new Date(r.events?.starts_at), new Date(r.events?.ends_at))}
+            {" · "}{describeRecurrence(r.events?.rrule)}
+            {" · "}{r.scope === "whole_event" ? "whole event" : "single date"}
+          </span>
+        </div>
+        <div className="text-xs text-ink/50 mt-1.5 flex flex-wrap gap-x-4">
+          <span>By {r.profiles?.full_name ?? r.profiles?.email}</span>
+        </div>
+        {r.notes && (
+          <p className="text-xs text-ink/60 mt-1.5 bg-sand/20 rounded-md px-2.5 py-1.5">
+            {r.notes}
+          </p>
+        )}
+        {actions && (
+          <div className="flex flex-wrap items-center gap-2 mt-3">
+            <button onClick={() => decideResource(r.id, "approved")} disabled={busy === r.id}
+              className="btn-primary text-sm py-2.5 sm:py-1.5">
+              {busy === r.id ? "…" : "Approve"}
+            </button>
+            {denyingId === r.id ? (
+              <>
+                <input autoFocus className="input w-full sm:w-auto sm:flex-1 py-2 sm:py-1.5 text-sm" placeholder="Reason (optional)"
+                  value={reason} onChange={(e) => setReason(e.target.value)} />
+                <button onClick={() => decideResource(r.id, "denied")} disabled={busy === r.id}
+                  className="btn-danger text-sm py-2.5 sm:py-1.5">Confirm deny</button>
+                <button onClick={() => { setDenyingId(null); setReason(""); }}
+                  className="text-xs text-ink/40 hover:text-ink px-2 py-2">cancel</button>
+              </>
+            ) : (
+              <button onClick={() => setDenyingId(r.id)} className="btn-secondary text-sm py-2.5 sm:py-1.5">
+                Deny
+              </button>
+            )}
+          </div>
+        )}
+        {r.status === "denied" && r.denial_reason && (
+          <p className="text-xs text-coral mt-1">Reason: {r.denial_reason}</p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <section>
         <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
-          Pending ({pending.length})
+          Pending Spaces ({pending.length})
         </h2>
         {pending.length === 0 ? (
           <div className="card p-8 text-center text-ink/40">All caught up.</div>
@@ -108,13 +191,37 @@ export default function ApprovalsList({ pending, recent }: { pending: any[]; rec
         )}
       </section>
 
+      <section>
+        <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
+          Pending Resources ({pendingResources.length})
+        </h2>
+        {pendingResources.length === 0 ? (
+          <div className="card p-8 text-center text-ink/40">All caught up.</div>
+        ) : (
+          <div className="grid gap-2">
+            {pendingResources.map((r) => <ResourceCard key={r.id} r={r} actions />)}
+          </div>
+        )}
+      </section>
+
       {recent.length > 0 && (
         <section>
           <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
-            Recent decisions
+            Recent space decisions
           </h2>
           <div className="grid gap-2">
             {recent.map((r) => <RequestCard key={r.id} r={r} actions={false} />)}
+          </div>
+        </section>
+      )}
+
+      {recentResources.length > 0 && (
+        <section>
+          <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
+            Recent resource decisions
+          </h2>
+          <div className="grid gap-2">
+            {recentResources.map((r) => <ResourceCard key={r.id} r={r} actions={false} />)}
           </div>
         </section>
       )}

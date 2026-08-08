@@ -32,6 +32,7 @@ export default async function AdminPage() {
     { data: profiles },
     { data: campusAdmins },
     { count: pendingCount },
+    { count: pendingResourceCount },
     { count: eventCount },
     { count: openFeedback },
   ] = await Promise.all([
@@ -39,6 +40,7 @@ export default async function AdminPage() {
     supabase.from("profiles").select("id, email, full_name, role").order("email"),
     supabase.from("campus_admins").select("campus_id, user_id"),
     supabase.from("space_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("resource_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
     supabase.from("events").select("*", { count: "exact", head: true }).eq("status", "active"),
     supabase.from("feedback").select("*", { count: "exact", head: true }).eq("status", "open"),
   ]);
@@ -59,7 +61,7 @@ export default async function AdminPage() {
 
         {/* Stat grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-          <StatCard label="Pending approvals" value={pendingCount ?? 0} href="/approvals" />
+          <StatCard label="Pending approvals" value={(pendingCount ?? 0) + (pendingResourceCount ?? 0)} href="/approvals" />
           <StatCard label="Active events" value={eventCount ?? 0} href="/events" />
           {isSuper && <StatCard label="Users" value={profiles?.length ?? 0} href="/admin/users" />}
           {isSuper && <StatCard label="Open feedback" value={openFeedback ?? 0} href="/admin/feedback" />}
@@ -95,6 +97,10 @@ export default async function AdminPage() {
             <Link href="/admin/groups" className="card p-4 hover:border-imperial/30 transition-colors">
               <h3 className="font-bold text-imperial">Groups &amp; Ministries</h3>
               <p className="text-xs text-ink/50 mt-1">Assign staff to the ministries they can book for</p>
+            </Link>
+            <Link href="/admin/resources" className="card p-4 hover:border-imperial/30 transition-colors">
+              <h3 className="font-bold text-imperial">Resources</h3>
+              <p className="text-xs text-ink/50 mt-1">Vehicles &amp; equipment staff can book with an event</p>
             </Link>
             <Link href="/admin/feedback" className="card p-4 hover:border-imperial/30 transition-colors">
               <h3 className="font-bold text-imperial">Feedback</h3>

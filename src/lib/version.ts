@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.32";
+export const CURRENT_VERSION = "1.33";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,15 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.33",
+    date: "August 7, 2026",
+    changes: [
+      { type: "feature", text: "You can now request resources on an event — vehicles (vans, box trucks) and equipment (tables, chairs, easels, podiums, and more). Pick a quantity, and Harbor checks live availability against other bookings so you can't over-book. Requests are approved by the relevant congregation admin, right alongside space approvals." },
+      { type: "feature", text: "Three more congregations are live: Oceanside, Tustin, and North Irvine — with their spaces ready to book." },
+      { type: "improvement", text: "The ministry list now matches Mariners' real ministries, each with its own color." },
+    ],
+  },
   {
     version: "1.32",
     date: "August 7, 2026",

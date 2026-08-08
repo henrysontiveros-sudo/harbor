@@ -26,7 +26,7 @@ export default async function EventPage({
 
   if (!event) notFound();
 
-  const [{ data: occurrences }, { data: requests }, { data: editors }, { data: spaces }, { data: buildings }, { data: profile }] =
+  const [{ data: occurrences }, { data: requests }, { data: editors }, { data: spaces }, { data: buildings }, { data: profile }, { data: resources }, { data: resourceRequests }] =
     await Promise.all([
       supabase.from("event_occurrences").select("*").eq("event_id", id).order("starts_at"),
       supabase.from("space_requests").select(`*, spaces ( id, name, capacity, amenities, building_id, buildings ( name ) ), profiles!space_requests_requested_by_fkey ( full_name, email )`).eq("event_id", id).order("created_at"),
@@ -34,6 +34,9 @@ export default async function EventPage({
       supabase.from("spaces").select("id, campus_id, building_id, group_name, name, capacity, amenities, sort_order").eq("campus_id", event.campus_id).eq("active", true).order("sort_order"),
       supabase.from("buildings").select("id, campus_id, name, sort_order").eq("campus_id", event.campus_id).order("sort_order"),
       supabase.from("profiles").select("role").eq("id", user!.id).single(),
+      // Resource catalog: this congregation's equipment + all fleet-wide vehicles (campus_id null)
+      supabase.from("resources").select("id, name, category, campus_id, qty_on_hand, is_billable, requires_approval, sort_order").eq("active", true).or(`campus_id.eq.${event.campus_id},campus_id.is.null`).order("category").order("sort_order").order("name"),
+      supabase.from("resource_requests").select(`*, resources ( id, name, category, campus_id, qty_on_hand, is_billable ), profiles!resource_requests_requested_by_fkey ( full_name, email )`).eq("event_id", id).order("created_at"),
     ]);
 
   const isOwner = event.created_by === user!.id;
@@ -51,6 +54,8 @@ export default async function EventPage({
         editors={(editors ?? []) as any}
         spaces={spaces ?? []}
         buildings={buildings ?? []}
+        resources={(resources ?? []) as any}
+        resourceRequests={(resourceRequests ?? []) as any}
         canEdit={canEdit}
         currentUserId={user!.id}
       />

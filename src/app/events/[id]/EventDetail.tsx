@@ -7,10 +7,11 @@ import { fmtRange, fmtDay, fmtTimeRange } from "@/lib/dates";
 import { describeRecurrence } from "@/lib/recurrence";
 import StatusBadge from "@/components/StatusBadge";
 import AddSpaceModal from "./AddSpaceModal";
+import AddResourceModal from "./AddResourceModal";
 import EditorsPanel from "./EditorsPanel";
 
 export default function EventDetail({
-  event, occurrences, requests, editors, spaces, buildings, canEdit, currentUserId,
+  event, occurrences, requests, editors, spaces, buildings, resources, resourceRequests, canEdit, currentUserId,
 }: {
   event: any;
   occurrences: any[];
@@ -18,6 +19,8 @@ export default function EventDetail({
   editors: any[];
   spaces: any[];
   buildings: any[];
+  resources: any[];
+  resourceRequests: any[];
   canEdit: boolean;
   currentUserId: string;
 }) {
@@ -25,6 +28,8 @@ export default function EventDetail({
   const supabase = createClient();
   const [showAdd, setShowAdd] = useState(false);
   const [editingRequest, setEditingRequest] = useState<any | null>(null);
+  const [showAddResource, setShowAddResource] = useState(false);
+  const [editingResource, setEditingResource] = useState<any | null>(null);
   const [showAllOccs, setShowAllOccs] = useState(false);
 
   const activeOccs = useMemo(
@@ -34,6 +39,11 @@ export default function EventDetail({
 
   async function cancelRequest(id: string) {
     await supabase.from("space_requests").update({ status: "cancelled" }).eq("id", id);
+    router.refresh();
+  }
+
+  async function cancelResourceRequest(id: string) {
+    await supabase.from("resource_requests").update({ status: "cancelled" }).eq("id", id);
     router.refresh();
   }
 
@@ -73,6 +83,7 @@ export default function EventDetail({
         {canEdit && event.status === "active" && (
           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             <button onClick={() => setShowAdd(true)} className="btn-primary py-2.5 sm:py-2 flex-1 sm:flex-none">+ Request a space</button>
+            <button onClick={() => setShowAddResource(true)} className="btn-secondary py-2.5 sm:py-2 flex-1 sm:flex-none">+ Request a resource</button>
             <button onClick={cancelEvent} className="btn-danger py-2.5 sm:py-2">Cancel event</button>
           </div>
         )}
@@ -158,6 +169,81 @@ export default function EventDetail({
         )}
       </section>
 
+      {/* Resource requests */}
+      <section className="mb-8">
+        <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
+          Resources ({resourceRequests.filter((r) => r.status !== "cancelled").length})
+        </h2>
+        {resourceRequests.filter((r) => r.status !== "cancelled").length === 0 ? (
+          <div className="card p-6 text-center text-ink/40">
+            <p className="mb-3 text-sm">No resources requested yet.</p>
+            {canEdit && event.status === "active" && (
+              <button onClick={() => setShowAddResource(true)} className="btn-secondary">
+                Request a resource
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid gap-2">
+            {resourceRequests.filter((r) => r.status !== "cancelled").map((r) => {
+              const occ = r.occurrence_id
+                ? occurrences.find((o) => o.id === r.occurrence_id)
+                : null;
+              const isVehicle = r.resources?.category === "vehicle";
+              return (
+                <div key={r.id} className="card px-4 py-3">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="font-medium">{r.resources?.name}</span>
+                    <span className="text-xs text-ink/40">{isVehicle ? "Vehicle" : "Equipment"}</span>
+                    {!isVehicle && r.quantity > 1 && (
+                      <span className="badge bg-cerulean/5 text-cerulean">×{r.quantity}</span>
+                    )}
+                    <StatusBadge status={r.status} />
+                    <span className="badge bg-imperial/5 text-imperial">
+                      {r.scope === "whole_event"
+                        ? "Whole event"
+                        : occ
+                          ? fmtDay(new Date(occ.starts_at))
+                          : "One occurrence"}
+                    </span>
+                    {r.resources?.is_billable && (
+                      <span className="badge bg-[#8a6320]/10 text-[#8a6320]">Billable</span>
+                    )}
+                    <span className="flex-1" />
+                    {canEdit && ["pending", "approved"].includes(r.status) && (
+                      <>
+                        <button onClick={() => setEditingResource(r)}
+                          className="text-xs text-cerulean hover:underline px-2 py-2 -my-1">
+                          Edit
+                        </button>
+                        <button onClick={() => cancelResourceRequest(r.id)}
+                          className="text-xs text-coral hover:underline px-2 py-2 -my-1">
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                    {canEdit && r.status === "denied" && (
+                      <button onClick={() => setEditingResource(r)}
+                        className="text-xs text-cerulean hover:underline px-2 py-2 -my-1">
+                        Edit & resubmit
+                      </button>
+                    )}
+                  </div>
+                  {r.notes && (
+                    <p className="text-xs text-ink/60 mt-1.5 bg-sand/20 rounded-md px-2.5 py-1.5">
+                      {r.notes}
+                    </p>
+                  )}
+                  {r.status === "denied" && r.denial_reason && (
+                    <p className="text-xs text-coral mt-1.5">Denied: {r.denial_reason}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       {/* Occurrences */}
       <section className="mb-8">
         <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
@@ -197,6 +283,17 @@ export default function EventDetail({
           buildings={buildings}
           editRequest={editingRequest ?? undefined}
           onClose={() => { setShowAdd(false); setEditingRequest(null); }}
+        />
+      )}
+
+      {(showAddResource || editingResource) && (
+        <AddResourceModal
+          event={event}
+          occurrences={activeOccs}
+          existingRequests={resourceRequests}
+          resources={resources}
+          editRequest={editingResource ?? undefined}
+          onClose={() => { setShowAddResource(false); setEditingResource(null); }}
         />
       )}
     </main>
