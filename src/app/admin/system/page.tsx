@@ -2,7 +2,7 @@ import Nav from "@/components/Nav";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { CURRENT_VERSION, CHANGELOG } from "@/lib/version";
+import { CURRENT_VERSION, CHANGELOG, sortedChangelog } from "@/lib/version";
 
 export const dynamic = "force-dynamic";
 
@@ -100,7 +100,7 @@ export default async function SystemPage() {
           <div className="card p-4 sm:col-span-2">
             <h3 className="font-bold text-imperial mb-3 text-sm uppercase tracking-wide">Developer Changelog</h3>
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {[...CHANGELOG].reverse().map((entry) => (
+              {sortedChangelog().map((entry) => (
                 <div key={entry.version}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="bg-imperial text-white text-[10px] font-bold px-2 py-0.5 rounded-full tracking-widest">

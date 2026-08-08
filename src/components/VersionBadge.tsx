@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { CURRENT_VERSION, CHANGELOG, type ChangeType } from "@/lib/version";
+import { CURRENT_VERSION, sortedChangelog, type ChangeType } from "@/lib/version";
 
 const TYPE_CONFIG: Record<ChangeType, { label: string; cls: string }> = {
   feature:     { label: "New",      cls: "bg-imperial/10 text-imperial" },
@@ -71,7 +71,7 @@ export default function VersionBadge() {
             <div className="h-[3px] bg-cerulean shrink-0" />
 
             <div className="overflow-y-auto p-6 space-y-8">
-              {[...CHANGELOG].reverse().map((entry) => (
+              {sortedChangelog().map((entry) => (
                 <div key={entry.version}>
                   <div className="flex items-center gap-3 mb-3">
                     <span className="bg-imperial text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full tracking-widest">

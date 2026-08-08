@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.28";
+export const CURRENT_VERSION = "1.29";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -13,7 +13,37 @@ export interface VersionEntry {
   changes: VersionChange[];
 }
 
+/**
+ * Parse a "major.minor" version string into a comparable number tuple.
+ * "1.28" -> [1, 28], "1.9" -> [1, 9]. Missing parts default to 0.
+ */
+function parseVersion(v: string): [number, number] {
+  const [maj, min] = v.split(".");
+  return [parseInt(maj, 10) || 0, parseInt(min ?? "0", 10) || 0];
+}
+
+/**
+ * CHANGELOG sorted newest-first by semantic version (numeric minor, so
+ * 1.10 > 1.9). Use this for display instead of relying on array insertion
+ * order or a fragile `.reverse()` — entries can be added anywhere in the
+ * array and will still render in the correct order.
+ */
+export function sortedChangelog(): VersionEntry[] {
+  return [...CHANGELOG].sort((a, b) => {
+    const [aMaj, aMin] = parseVersion(a.version);
+    const [bMaj, bMin] = parseVersion(b.version);
+    return bMaj - aMaj || bMin - aMin;
+  });
+}
+
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.29",
+    date: "August 7, 2026",
+    changes: [
+      { type: "fix", text: "The Change Log now lists every version newest-first. Previously it stopped at the older entries and buried the most recent updates at the bottom, so the newest changes appeared to be missing." },
+    ],
+  },
   {
     version: "1.28",
     date: "August 7, 2026",
