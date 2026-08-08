@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isProtectedEmail } from "@/lib/protected-accounts";
 
 export async function POST(
   request: Request,
@@ -27,6 +28,11 @@ export async function POST(
   const { data: target } = await admin
     .from("profiles").select("id, email, facilities").eq("id", id).single();
   if (!target) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  // Guard protected accounts — their facilities access cannot be turned off.
+  if (isProtectedEmail(target.email) && facilities === false) {
+    return NextResponse.json({ error: "This account is protected and cannot be changed." }, { status: 403 });
+  }
 
   if (target.facilities === facilities) {
     return NextResponse.json({ success: true, unchanged: true });

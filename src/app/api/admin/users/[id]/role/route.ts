@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isProtectedEmail } from "@/lib/protected-accounts";
 
 const VALID_ROLES = ["viewer", "staff", "admin", "super_admin"];
-
-// Henry's accounts — cannot be demoted or locked out via the UI.
-const PROTECTED_EMAILS = [
-  "hontiveros@marinerschurch.org",
-  "henrysontiveros@gmail.com",
-];
 
 export async function POST(
   request: Request,
@@ -39,7 +34,7 @@ export async function POST(
   if (!target) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
   // Guard protected accounts from demotion
-  if (PROTECTED_EMAILS.includes(target.email.toLowerCase()) && role !== "super_admin") {
+  if (isProtectedEmail(target.email) && role !== "super_admin") {
     return NextResponse.json({ error: "This account is protected and cannot be changed." }, { status: 403 });
   }
 

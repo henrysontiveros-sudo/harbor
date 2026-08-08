@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.31";
+export const CURRENT_VERSION = "1.32";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.32",
+    date: "August 7, 2026",
+    changes: [
+      { type: "feature", text: "Admins can now mark feedback items as resolved (and reopen them if needed). The Feedback inbox defaults to showing only open items, with a toggle to view resolved ones." },
+    ],
+  },
   {
     version: "1.31",
     date: "August 7, 2026",
