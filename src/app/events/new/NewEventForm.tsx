@@ -5,19 +5,23 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { laWallTimeToISO } from "@/lib/dates";
 import { generateOccurrences, specToRRuleString, RecurrenceSpec } from "@/lib/recurrence";
+import MinistryPicker from "./MinistryPicker";
 
 interface Campus { id: string; name: string; slug: string }
-interface Group { id: string; name: string }
+interface Group { id: string; name: string; color: string | null; parent_id: string | null }
+interface Parent { id: string; name: string }
 
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function NewEventForm({
   campuses,
   groups,
+  parents,
   isAdmin,
 }: {
   campuses: Campus[];
   groups: Group[];
+  parents: Parent[];
   isAdmin: boolean;
 }) {
   const router = useRouter();
@@ -109,10 +113,13 @@ export default function NewEventForm({
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="label">Group / ministry *</label>
-          <select className="input" value={groupId} onChange={(e) => setGroupId(e.target.value)} required={!isAdmin}>
-            {isAdmin && <option value="">— General (no specific group) —</option>}
-            {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
-          </select>
+          <MinistryPicker
+            groups={groups}
+            parents={parents}
+            value={groupId}
+            onChange={setGroupId}
+            allowNone={isAdmin}
+          />
           <p className="text-xs text-ink/40 mt-1">
             {isAdmin
               ? "As an admin you can book for any ministry."

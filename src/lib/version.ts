@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.34";
+export const CURRENT_VERSION = "1.35";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.35",
+    date: "August 7, 2026",
+    changes: [
+      { type: "improvement", text: "When creating an event, the ministry picker now shows each ministry's color and groups related ministries under their parent (e.g. Kids, High School, and Junior High under Next Gen) so it's easier to find the right one." },
+    ],
+  },
   {
     version: "1.34",
     date: "August 7, 2026",

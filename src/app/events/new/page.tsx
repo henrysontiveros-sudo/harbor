@@ -25,22 +25,29 @@ export default async function NewEventPage() {
 
   // Groups the person may book for. Admins/super admins: all active groups.
   // Staff: only the active groups they're assigned to.
-  let groups: { id: string; name: string }[] = [];
+  // parent_id + color are carried so the picker can nest and color-swatch them.
+  let groups: { id: string; name: string; color: string | null; parent_id: string | null }[] = [];
   if (isAdmin) {
     const { data } = await supabase
-      .from("groups").select("id, name").eq("active", true).order("sort_order").order("name");
+      .from("groups").select("id, name, color, parent_id").eq("active", true).order("sort_order").order("name");
     groups = data ?? [];
   } else {
     const { data } = await supabase
       .from("group_members")
-      .select("groups!inner ( id, name, active, sort_order )")
+      .select("groups!inner ( id, name, color, parent_id, active, sort_order )")
       .eq("user_id", user!.id);
     groups = (data ?? [])
       .map((r: any) => r.groups)
       .filter((g: any) => g && g.active)
       .sort((a: any, b: any) => (a.sort_order - b.sort_order) || a.name.localeCompare(b.name))
-      .map((g: any) => ({ id: g.id, name: g.name }));
+      .map((g: any) => ({ id: g.id, name: g.name, color: g.color ?? null, parent_id: g.parent_id ?? null }));
   }
+
+  // Parent ministries (for display grouping in the picker). Fetched separately so
+  // staff see the parent label even when they can't book for the parent itself.
+  const { data: parentRows } = await supabase
+    .from("groups").select("id, name").is("parent_id", null).eq("active", true).order("sort_order").order("name");
+  const parents = parentRows ?? [];
 
   // Staff with no groups cannot book — show a clear empty state instead of the form.
   if (!isAdmin && groups.length === 0) {
@@ -70,7 +77,7 @@ export default async function NewEventPage() {
         <p className="text-sm text-ink/50 mb-6">
           Step 1 of 2 — create the event, then add the spaces you need.
         </p>
-        <NewEventForm campuses={campuses ?? []} groups={groups} isAdmin={isAdmin} />
+        <NewEventForm campuses={campuses ?? []} groups={groups} parents={parents} isAdmin={isAdmin} />
       </main>
     </>
   );
