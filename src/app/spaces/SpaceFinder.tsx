@@ -39,6 +39,7 @@ export default function SpaceFinder({
   const [start, setStart] = useState(defaultStart());
   const [end, setEnd] = useState(defaultEnd());
   const [minCap, setMinCap] = useState("");
+  const [amenityFilter, setAmenityFilter] = useState<string[]>([]);
   const [busy, setBusy] = useState<Busy[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -101,6 +102,28 @@ export default function SpaceFinder({
     [buildings, campusId]
   );
 
+  // Distinct amenities present on spaces in the selected congregation, sorted
+  // by how common they are (most-common first), derived from real space data.
+  const amenityOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const s of spaces) {
+      if (s.campus_id !== campusId) continue;
+      for (const a of s.amenities) {
+        const key = a.trim();
+        if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
+      }
+    }
+    return [...counts.entries()]
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([a]) => a);
+  }, [spaces, campusId]);
+
+  function toggleAmenity(a: string) {
+    setAmenityFilter((prev) =>
+      prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a]
+    );
+  }
+
   const busyBySpace = useMemo(() => {
     const m = new Map<string, Busy[]>();
     for (const b of busy ?? []) {
@@ -137,14 +160,73 @@ export default function SpaceFinder({
           {loading ? "Checking…" : "Check availability"}
         </button>
       </div>
+
+      {amenityOptions.length > 0 && (
+        <div className="mb-6 -mt-2">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="label mb-0">Amenities</span>
+            {amenityFilter.length > 0 && (
+              <button
+                onClick={() => setAmenityFilter([])}
+                className="text-xs text-cerulean hover:text-imperial transition-colors"
+              >
+                Clear ({amenityFilter.length})
+              </button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {amenityOptions.map((a) => {
+              const on = amenityFilter.includes(a);
+              return (
+                <button
+                  key={a}
+                  onClick={() => toggleAmenity(a)}
+                  aria-pressed={on}
+                  className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
+                    on
+                      ? "bg-imperial text-white border-imperial"
+                      : "bg-white text-ink/60 border-ink/15 hover:border-cerulean/50 hover:text-ink"
+                  }`}
+                >
+                  {a}
+                </button>
+              );
+            })}
+          </div>
+          {amenityFilter.length > 0 && (
+            <p className="text-xs text-ink/40 mt-2">
+              Showing only spaces with {amenityFilter.length === 1 ? "this amenity" : "all selected amenities"}.
+            </p>
+          )}
+        </div>
+      )}
       {err && <p className="text-sm text-coral mb-4">{err}</p>}
 
-      {busy !== null && (
+      {busy !== null && (() => {
+        const anyMatch = campusBuildings.some((b) =>
+          spaces.some(
+            (s) =>
+              s.building_id === b.id &&
+              (!minCapNum || (s.capacity ?? 0) >= minCapNum) &&
+              amenityFilter.every((a) => s.amenities.includes(a))
+          )
+        );
+        if (!anyMatch) {
+          return (
+            <div className="card px-4 py-8 text-center text-sm text-ink/50">
+              No spaces match these filters. Try removing an amenity or lowering the minimum capacity.
+            </div>
+          );
+        }
+        return (
         <div className="space-y-6">
           {campusBuildings.map((b) => {
             const list = spaces
               .filter((s) => s.building_id === b.id)
-              .filter((s) => !minCapNum || (s.capacity ?? 0) >= minCapNum);
+              .filter((s) => !minCapNum || (s.capacity ?? 0) >= minCapNum)
+              .filter((s) =>
+                amenityFilter.every((a) => s.amenities.includes(a))
+              );
             if (!list.length) return null;
             const groups: { label: string | null; items: Space[] }[] = [];
             for (const s of list) {
@@ -199,7 +281,8 @@ export default function SpaceFinder({
             );
           })}
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.30";
+export const CURRENT_VERSION = "1.31";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.31",
+    date: "August 7, 2026",
+    changes: [
+      { type: "feature", text: "Find a Space now has amenity filters — narrow results to spaces that have what you need (TV, conference table, projector, full tech set-up, and more). Select several to require all of them." },
+    ],
+  },
   {
     version: "1.30",
     date: "August 7, 2026",
