@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.33";
+export const CURRENT_VERSION = "1.34";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.34",
+    date: "August 7, 2026",
+    changes: [
+      { type: "feature", text: "You can now request services on an event — Childcare, Safety, Production, Catering, and the Vehicle Use Policy Form. Each congregation offers its own set, and requests are routed to that congregation's team for approval alongside spaces and resources." },
+    ],
+  },
   {
     version: "1.33",
     date: "August 7, 2026",

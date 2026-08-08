@@ -8,10 +8,11 @@ import { describeRecurrence } from "@/lib/recurrence";
 import StatusBadge from "@/components/StatusBadge";
 import AddSpaceModal from "./AddSpaceModal";
 import AddResourceModal from "./AddResourceModal";
+import AddServiceModal from "./AddServiceModal";
 import EditorsPanel from "./EditorsPanel";
 
 export default function EventDetail({
-  event, occurrences, requests, editors, spaces, buildings, resources, resourceRequests, canEdit, currentUserId,
+  event, occurrences, requests, editors, spaces, buildings, resources, resourceRequests, services, serviceRequests, canEdit, currentUserId,
 }: {
   event: any;
   occurrences: any[];
@@ -21,6 +22,8 @@ export default function EventDetail({
   buildings: any[];
   resources: any[];
   resourceRequests: any[];
+  services: any[];
+  serviceRequests: any[];
   canEdit: boolean;
   currentUserId: string;
 }) {
@@ -30,6 +33,8 @@ export default function EventDetail({
   const [editingRequest, setEditingRequest] = useState<any | null>(null);
   const [showAddResource, setShowAddResource] = useState(false);
   const [editingResource, setEditingResource] = useState<any | null>(null);
+  const [showAddService, setShowAddService] = useState(false);
+  const [editingService, setEditingService] = useState<any | null>(null);
   const [showAllOccs, setShowAllOccs] = useState(false);
 
   const activeOccs = useMemo(
@@ -44,6 +49,11 @@ export default function EventDetail({
 
   async function cancelResourceRequest(id: string) {
     await supabase.from("resource_requests").update({ status: "cancelled" }).eq("id", id);
+    router.refresh();
+  }
+
+  async function cancelServiceRequest(id: string) {
+    await supabase.from("service_requests").update({ status: "cancelled" }).eq("id", id);
     router.refresh();
   }
 
@@ -84,6 +94,7 @@ export default function EventDetail({
           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             <button onClick={() => setShowAdd(true)} className="btn-primary py-2.5 sm:py-2 flex-1 sm:flex-none">+ Request a space</button>
             <button onClick={() => setShowAddResource(true)} className="btn-secondary py-2.5 sm:py-2 flex-1 sm:flex-none">+ Request a resource</button>
+            <button onClick={() => setShowAddService(true)} className="btn-secondary py-2.5 sm:py-2 flex-1 sm:flex-none">+ Request a service</button>
             <button onClick={cancelEvent} className="btn-danger py-2.5 sm:py-2">Cancel event</button>
           </div>
         )}
@@ -244,6 +255,73 @@ export default function EventDetail({
         )}
       </section>
 
+      {/* Service requests */}
+      <section className="mb-8">
+        <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
+          Services ({serviceRequests.filter((r) => r.status !== "cancelled").length})
+        </h2>
+        {serviceRequests.filter((r) => r.status !== "cancelled").length === 0 ? (
+          <div className="card p-6 text-center text-ink/40">
+            <p className="mb-3 text-sm">No services requested yet.</p>
+            {canEdit && event.status === "active" && services.length > 0 && (
+              <button onClick={() => setShowAddService(true)} className="btn-secondary">
+                Request a service
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid gap-2">
+            {serviceRequests.filter((r) => r.status !== "cancelled").map((r) => {
+              const occ = r.occurrence_id
+                ? occurrences.find((o) => o.id === r.occurrence_id)
+                : null;
+              return (
+                <div key={r.id} className="card px-4 py-3">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="font-medium">{r.services?.name}</span>
+                    <StatusBadge status={r.status} />
+                    <span className="badge bg-imperial/5 text-imperial">
+                      {r.scope === "whole_event"
+                        ? "Whole event"
+                        : occ
+                          ? fmtDay(new Date(occ.starts_at))
+                          : "One occurrence"}
+                    </span>
+                    <span className="flex-1" />
+                    {canEdit && ["pending", "approved"].includes(r.status) && (
+                      <>
+                        <button onClick={() => setEditingService(r)}
+                          className="text-xs text-cerulean hover:underline px-2 py-2 -my-1">
+                          Edit
+                        </button>
+                        <button onClick={() => cancelServiceRequest(r.id)}
+                          className="text-xs text-coral hover:underline px-2 py-2 -my-1">
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                    {canEdit && r.status === "denied" && (
+                      <button onClick={() => setEditingService(r)}
+                        className="text-xs text-cerulean hover:underline px-2 py-2 -my-1">
+                        Edit & resubmit
+                      </button>
+                    )}
+                  </div>
+                  {r.details && (
+                    <p className="text-xs text-ink/60 mt-1.5 bg-sand/20 rounded-md px-2.5 py-1.5">
+                      {r.details}
+                    </p>
+                  )}
+                  {r.status === "denied" && r.denial_reason && (
+                    <p className="text-xs text-coral mt-1.5">Denied: {r.denial_reason}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       {/* Occurrences */}
       <section className="mb-8">
         <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
@@ -294,6 +372,17 @@ export default function EventDetail({
           resources={resources}
           editRequest={editingResource ?? undefined}
           onClose={() => { setShowAddResource(false); setEditingResource(null); }}
+        />
+      )}
+
+      {(showAddService || editingService) && (
+        <AddServiceModal
+          event={event}
+          occurrences={activeOccs}
+          existingRequests={serviceRequests}
+          services={services}
+          editRequest={editingService ?? undefined}
+          onClose={() => { setShowAddService(false); setEditingService(null); }}
         />
       )}
     </main>

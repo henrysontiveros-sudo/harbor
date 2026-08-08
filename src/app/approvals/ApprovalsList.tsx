@@ -7,7 +7,7 @@ import { fmtRange } from "@/lib/dates";
 import { describeRecurrence } from "@/lib/recurrence";
 import StatusBadge from "@/components/StatusBadge";
 
-export default function ApprovalsList({ pending, recent, pendingResources, recentResources }: { pending: any[]; recent: any[]; pendingResources: any[]; recentResources: any[] }) {
+export default function ApprovalsList({ pending, recent, pendingResources, recentResources, pendingServices, recentServices }: { pending: any[]; recent: any[]; pendingResources: any[]; recentResources: any[]; pendingServices: any[]; recentServices: any[] }) {
   const router = useRouter();
   const [denyingId, setDenyingId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
@@ -34,6 +34,24 @@ export default function ApprovalsList({ pending, recent, pendingResources, recen
   async function decideResource(id: string, status: "approved" | "denied") {
     setBusy(id);
     const res = await fetch(`/api/resource-requests/${id}/decide`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status, denial_reason: status === "denied" ? reason.trim() || null : null }),
+    });
+    if (!res.ok) {
+      alert("Couldn't save the decision. Please try again.");
+      setBusy(null);
+      return;
+    }
+    setBusy(null);
+    setDenyingId(null);
+    setReason("");
+    router.refresh();
+  }
+
+  async function decideService(id: string, status: "approved" | "denied") {
+    setBusy(id);
+    const res = await fetch(`/api/service-requests/${id}/decide`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status, denial_reason: status === "denied" ? reason.trim() || null : null }),
@@ -176,6 +194,63 @@ export default function ApprovalsList({ pending, recent, pendingResources, recen
     );
   }
 
+  function ServiceCard({ r, actions }: { r: any; actions: boolean }) {
+    return (
+      <div className="card px-4 py-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="font-medium">{r.services?.name}</span>
+          <span className="text-xs text-ink/40">
+            {r.events?.campuses?.name ?? ""}
+          </span>
+          {!actions && <StatusBadge status={r.status} />}
+        </div>
+        <div className="text-sm text-ink/70 mt-1">
+          <Link href={`/events/${r.events?.id}`} className="text-cerulean hover:underline">
+            {r.events?.title}
+          </Link>
+          <span className="text-xs text-ink/50">
+            {" — "}{fmtRange(new Date(r.events?.starts_at), new Date(r.events?.ends_at))}
+            {" · "}{describeRecurrence(r.events?.rrule)}
+            {" · "}{r.scope === "whole_event" ? "whole event" : "single date"}
+          </span>
+        </div>
+        <div className="text-xs text-ink/50 mt-1.5 flex flex-wrap gap-x-4">
+          <span>By {r.profiles?.full_name ?? r.profiles?.email}</span>
+        </div>
+        {r.details && (
+          <p className="text-xs text-ink/60 mt-1.5 bg-sand/20 rounded-md px-2.5 py-1.5">
+            {r.details}
+          </p>
+        )}
+        {actions && (
+          <div className="flex flex-wrap items-center gap-2 mt-3">
+            <button onClick={() => decideService(r.id, "approved")} disabled={busy === r.id}
+              className="btn-primary text-sm py-2.5 sm:py-1.5">
+              {busy === r.id ? "…" : "Approve"}
+            </button>
+            {denyingId === r.id ? (
+              <>
+                <input autoFocus className="input w-full sm:w-auto sm:flex-1 py-2 sm:py-1.5 text-sm" placeholder="Reason (optional)"
+                  value={reason} onChange={(e) => setReason(e.target.value)} />
+                <button onClick={() => decideService(r.id, "denied")} disabled={busy === r.id}
+                  className="btn-danger text-sm py-2.5 sm:py-1.5">Confirm deny</button>
+                <button onClick={() => { setDenyingId(null); setReason(""); }}
+                  className="text-xs text-ink/40 hover:text-ink px-2 py-2">cancel</button>
+              </>
+            ) : (
+              <button onClick={() => setDenyingId(r.id)} className="btn-secondary text-sm py-2.5 sm:py-1.5">
+                Deny
+              </button>
+            )}
+          </div>
+        )}
+        {r.status === "denied" && r.denial_reason && (
+          <p className="text-xs text-coral mt-1">Reason: {r.denial_reason}</p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <section>
@@ -204,6 +279,19 @@ export default function ApprovalsList({ pending, recent, pendingResources, recen
         )}
       </section>
 
+      <section>
+        <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
+          Pending Services ({pendingServices.length})
+        </h2>
+        {pendingServices.length === 0 ? (
+          <div className="card p-8 text-center text-ink/40">All caught up.</div>
+        ) : (
+          <div className="grid gap-2">
+            {pendingServices.map((r) => <ServiceCard key={r.id} r={r} actions />)}
+          </div>
+        )}
+      </section>
+
       {recent.length > 0 && (
         <section>
           <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
@@ -222,6 +310,17 @@ export default function ApprovalsList({ pending, recent, pendingResources, recen
           </h2>
           <div className="grid gap-2">
             {recentResources.map((r) => <ResourceCard key={r.id} r={r} actions={false} />)}
+          </div>
+        </section>
+      )}
+
+      {recentServices.length > 0 && (
+        <section>
+          <h2 className="text-sm font-bold uppercase tracking-wide text-ink/40 mb-2">
+            Recent service decisions
+          </h2>
+          <div className="grid gap-2">
+            {recentServices.map((r) => <ServiceCard key={r.id} r={r} actions={false} />)}
           </div>
         </section>
       )}

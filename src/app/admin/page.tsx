@@ -33,6 +33,7 @@ export default async function AdminPage() {
     { data: campusAdmins },
     { count: pendingCount },
     { count: pendingResourceCount },
+    { count: pendingServiceCount },
     { count: eventCount },
     { count: openFeedback },
   ] = await Promise.all([
@@ -41,6 +42,7 @@ export default async function AdminPage() {
     supabase.from("campus_admins").select("campus_id, user_id"),
     supabase.from("space_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
     supabase.from("resource_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("service_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
     supabase.from("events").select("*", { count: "exact", head: true }).eq("status", "active"),
     supabase.from("feedback").select("*", { count: "exact", head: true }).eq("status", "open"),
   ]);
@@ -61,7 +63,7 @@ export default async function AdminPage() {
 
         {/* Stat grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-          <StatCard label="Pending approvals" value={(pendingCount ?? 0) + (pendingResourceCount ?? 0)} href="/approvals" />
+          <StatCard label="Pending approvals" value={(pendingCount ?? 0) + (pendingResourceCount ?? 0) + (pendingServiceCount ?? 0)} href="/approvals" />
           <StatCard label="Active events" value={eventCount ?? 0} href="/events" />
           {isSuper && <StatCard label="Users" value={profiles?.length ?? 0} href="/admin/users" />}
           {isSuper && <StatCard label="Open feedback" value={openFeedback ?? 0} href="/admin/feedback" />}

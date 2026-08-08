@@ -70,6 +70,38 @@ export default async function ApprovalsPage() {
     (r: any) => isSuper || adminCampusIds.includes(routeCampus(r))
   );
 
+  // ── Pending SERVICE requests ──
+  // Routing campus = service.campus_id (or the event's campus as a fallback).
+  const { data: pendingServicesAll } = await supabase
+    .from("service_requests")
+    .select(`
+      *,
+      services ( id, name, campus_id ),
+      events ( id, title, campus_id, ministry, rrule, starts_at, ends_at, campuses ( name ) ),
+      profiles!service_requests_requested_by_fkey ( full_name, email )
+    `)
+    .eq("status", "pending")
+    .order("created_at");
+  const routeCampusSvc = (r: any) => r.services?.campus_id ?? r.events?.campus_id;
+  const pendingServices = (pendingServicesAll ?? []).filter(
+    (r: any) => isSuper || adminCampusIds.includes(routeCampusSvc(r))
+  );
+
+  const { data: recentServicesAll } = await supabase
+    .from("service_requests")
+    .select(`
+      *,
+      services ( id, name, campus_id ),
+      events ( id, title, campus_id, starts_at, ends_at, rrule, campuses ( name ) ),
+      profiles!service_requests_requested_by_fkey ( full_name, email )
+    `)
+    .in("status", ["approved", "denied"])
+    .order("decided_at", { ascending: false })
+    .limit(15);
+  const recentServices = (recentServicesAll ?? []).filter(
+    (r: any) => isSuper || adminCampusIds.includes(routeCampusSvc(r))
+  );
+
   // recent decisions
   let recentQ = supabase
     .from("space_requests")
@@ -98,6 +130,8 @@ export default async function ApprovalsPage() {
           recent={(recent ?? []) as any}
           pendingResources={pendingResources as any}
           recentResources={recentResources as any}
+          pendingServices={pendingServices as any}
+          recentServices={recentServices as any}
         />
       </main>
     </>
