@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.35";
+export const CURRENT_VERSION = "1.36";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.36",
+    date: "August 9, 2026",
+    changes: [
+      { type: "improvement", text: "Added a subtle \"Built by Swellworks\" credit with the Swellworks swell mark at the bottom of every page, linking to swellworks.io." },
+    ],
+  },
   {
     version: "1.35",
     date: "August 7, 2026",
