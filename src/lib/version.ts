@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.38";
+export const CURRENT_VERSION = "1.39";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.39",
+    date: "August 12, 2026",
+    changes: [
+      { type: "feature", text: "Chairs requested on the Request-a-Space form now also file a matching chair resource request against the congregation's chair inventory, so Facilities availability stays accurate. The linked chair request updates when you change the number and is released if you set chairs back to zero." },
+    ],
+  },
   {
     version: "1.38",
     date: "August 12, 2026",

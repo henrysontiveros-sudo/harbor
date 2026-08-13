@@ -359,6 +359,8 @@ export default function EventDetail({
           existingRequests={requests}
           spaces={spaces}
           buildings={buildings}
+          resources={resources}
+          resourceRequests={resourceRequests}
           editRequest={editingRequest ?? undefined}
           onClose={() => { setShowAdd(false); setEditingRequest(null); }}
         />

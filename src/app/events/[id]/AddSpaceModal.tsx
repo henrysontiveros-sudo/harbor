@@ -16,13 +16,15 @@ interface Conflict {
 }
 
 export default function AddSpaceModal({
-  event, occurrences, existingRequests, spaces, buildings, onClose, editRequest,
+  event, occurrences, existingRequests, spaces, buildings, resources = [], resourceRequests = [], onClose, editRequest,
 }: {
   event: any;
   occurrences: any[];
   existingRequests: any[];
   spaces: any[];
   buildings: any[];
+  resources?: any[];
+  resourceRequests?: any[];
   onClose: () => void;
   editRequest?: any;
 }) {
@@ -47,6 +49,20 @@ export default function AddSpaceModal({
   const [bypassCode, setBypassCode] = useState("");
 
   const isRecurring = occurrences.length > 1;
+
+  // The chairs entered here also register against this congregation's chair
+  // inventory as a resource request, so Facilities availability stays accurate.
+  // Match the "Chair(s)" equipment resource for this event's congregation.
+  const chairResource = useMemo(() => {
+    const eq = resources.filter(
+      (r) => r.category === "equipment" && r.campus_id === event.campus_id
+    );
+    return (
+      eq.find((r) => /^chair\(s\)$/i.test((r.name ?? "").trim())) ??
+      eq.find((r) => /\bchair/i.test(r.name ?? "")) ??
+      null
+    );
+  }, [resources, event.campus_id]);
 
   const proposedTimes = useMemo(() => {
     if (scope === "whole_event") {
@@ -98,6 +114,43 @@ export default function AddSpaceModal({
     );
   }, [spaceId, scope, occurrenceId, existingRequests, editRequest]);
 
+  // Create/update/cancel the linked chair resource request to mirror the
+  // chairs entered on this space request. Best-effort: a failure here never
+  // blocks the space booking (the space request is the source of truth).
+  async function syncChairResource(userId: string, spaceRequestId: string | null) {
+    if (!chairResource) return;
+    const existing = resourceRequests.find(
+      (rr) =>
+        rr.resource_id === chairResource.id &&
+        rr.linked_space_request_id === (editRequest?.id ?? spaceRequestId) &&
+        ["pending", "approved"].includes(rr.status)
+    );
+    try {
+      if (chairs > 0) {
+        const rpayload: any = {
+          event_id: event.id,
+          resource_id: chairResource.id,
+          scope,
+          occurrence_id: scope === "occurrence" ? occurrenceId : null,
+          quantity: chairs,
+          notes: `Chairs for ${selectedSpace?.name ?? "a space"} (auto-added from the space request).`,
+          status: editRequest?.admin_override || withinLeadTime ? "approved" : "pending",
+          linked_space_request_id: editRequest?.id ?? spaceRequestId,
+        };
+        if (existing) {
+          await supabase.from("resource_requests").update(rpayload).eq("id", existing.id);
+        } else {
+          await supabase.from("resource_requests").insert({ ...rpayload, requested_by: userId });
+        }
+      } else if (existing) {
+        // Chairs cleared → release the linked resource request
+        await supabase.from("resource_requests").update({ status: "cancelled" }).eq("id", existing.id);
+      }
+    } catch {
+      /* best-effort; ignore */
+    }
+  }
+
   async function submit() {
     setErr(null);
     if (!spaceId) { setErr("Pick a space."); return; }
@@ -123,14 +176,17 @@ export default function AddSpaceModal({
     if (withinLeadTime && !editRequest) {
       if (!bypassCode.trim()) { setErr(`This booking is within ${LEAD_TIME_HOURS} hours. Enter an admin bypass code to proceed.`); return; }
       setBusy(true);
+      const { data: { user } } = await supabase.auth.getUser();
       const res = await fetch("/api/requests/bypass", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: bypassCode.trim(), payload: sharedPayload }),
       });
       const json = await res.json().catch(() => ({}));
+      if (!res.ok) { setBusy(false); setErr(json.error ?? "Bypass failed."); return; }
+      const newId = json.request_id ?? null;
+      await syncChairResource(user!.id, newId);
       setBusy(false);
-      if (!res.ok) { setErr(json.error ?? "Bypass failed."); return; }
       router.refresh();
       onClose();
       return;
@@ -140,11 +196,18 @@ export default function AddSpaceModal({
     setBusy(true);
     const { data: { user } } = await supabase.auth.getUser();
     const payload = { ...sharedPayload, status: "pending" as const };
-    const { error } = editRequest
-      ? await supabase.from("space_requests").update(payload).eq("id", editRequest.id)
-      : await supabase.from("space_requests").insert({ ...payload, requested_by: user!.id });
+    let newId: string | null = editRequest?.id ?? null;
+    let error;
+    if (editRequest) {
+      ({ error } = await supabase.from("space_requests").update(payload).eq("id", editRequest.id));
+    } else {
+      const ins = await supabase.from("space_requests").insert({ ...payload, requested_by: user!.id }).select("id").single();
+      error = ins.error;
+      newId = ins.data?.id ?? null;
+    }
+    if (error) { setBusy(false); setErr(error.message); return; }
+    await syncChairResource(user!.id, newId);
     setBusy(false);
-    if (error) { setErr(error.message); return; }
     router.refresh();
     onClose();
   }
@@ -285,6 +348,11 @@ export default function AddSpaceModal({
             <label className="label">Chairs</label>
             <input type="number" min={0} className="input" value={chairs}
               onChange={(e) => setChairs(parseInt(e.target.value) || 0)} />
+            {chairResource && chairs > 0 && (
+              <p className="text-[11px] text-ink/40 mt-1 leading-tight">
+                Adds {chairs} to the chair resource request for this event.
+              </p>
+            )}
           </div>
           <div className="col-span-2 sm:col-span-1">
             <label className="label">Setup style</label>
