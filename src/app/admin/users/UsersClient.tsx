@@ -84,6 +84,30 @@ export default function UsersClient({
     }
   }
 
+  async function removeUser(id: string, label: string) {
+    if (
+      !window.confirm(
+        `Remove ${label} from Harbor?\n\nThis deletes their account and access. They'll no longer appear in this list. If they sign in again with Google they'll come back as a Viewer with no access.`
+      )
+    ) {
+      return;
+    }
+    setBusyId(id);
+    setErr(null);
+    try {
+      const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error ?? "Failed to remove user");
+      }
+      router.refresh();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Failed to remove user");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   async function toggleFacilities(id: string, facilities: boolean) {
     setBusyId(id);
     setErr(null);
@@ -176,6 +200,17 @@ export default function UsersClient({
                   />
                   Facilities
                 </label>
+                {!isProtected && !isSelf && (
+                  <button
+                    type="button"
+                    onClick={() => removeUser(p.id, p.full_name ?? p.email)}
+                    disabled={busyId === p.id}
+                    title="Remove this person from Harbor (deletes their account and access)."
+                    className="text-xs text-coral/80 hover:text-coral hover:underline disabled:opacity-40 pl-1 shrink-0"
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             </div>
           );

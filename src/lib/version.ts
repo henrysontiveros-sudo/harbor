@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.36";
+export const CURRENT_VERSION = "1.37";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.37",
+    date: "August 12, 2026",
+    changes: [
+      { type: "feature", text: "Super admins can now remove a person from Harbor from the Users & Roles page. A Remove button on each row deletes their account and access so they no longer appear in the list. Protected accounts and your own account can't be removed, and anyone who has created events or requests is protected from deletion until those are reassigned." },
+    ],
+  },
   {
     version: "1.36",
     date: "August 9, 2026",
