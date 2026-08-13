@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.37";
+export const CURRENT_VERSION = "1.38";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.38",
+    date: "August 12, 2026",
+    changes: [
+      { type: "improvement", text: "On the create-event page, the ministry picker now lists the nested groups first (each with its ministries A to Z under it), followed by the standalone ministries A to Z, so it's faster to scan and find the right one." },
+    ],
+  },
   {
     version: "1.37",
     date: "August 12, 2026",

@@ -39,7 +39,11 @@ export default function MinistryPicker({
 
   // Build display structure: which parent_ids are actually present among the
   // selectable groups, so we only show headers that have children the user can pick.
+  // Everything is ordered alphabetically: parent headers by name, children within
+  // each parent by name, and standalone ministries by name.
   const { standalone, byParent, parentOrder } = useMemo(() => {
+    const byName = (a: { name: string }, b: { name: string }) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
     const standalone: Group[] = [];
     const byParent = new Map<string, Group[]>();
     for (const g of groups) {
@@ -50,8 +54,14 @@ export default function MinistryPicker({
         standalone.push(g);
       }
     }
-    // parent display order follows the parents[] (already sort_order'd)
-    const parentOrder = parents.map((p) => p.id).filter((id) => byParent.has(id));
+    standalone.sort(byName);
+    for (const list of byParent.values()) list.sort(byName);
+    // parent headers alphabetical by name (only those that have selectable children)
+    const parentOrder = parents
+      .filter((p) => byParent.has(p.id))
+      .slice()
+      .sort(byName)
+      .map((p) => p.id);
     return { standalone, byParent, parentOrder };
   }, [groups, parents, parentName]);
 
@@ -87,13 +97,7 @@ export default function MinistryPicker({
             </button>
           )}
 
-          {/* Standalone (top-level) ministries */}
-          {standalone.map((g) => (
-            <Row key={g.id} g={g} selected={g.id === value}
-              onPick={() => { onChange(g.id); setOpen(false); }} />
-          ))}
-
-          {/* Nested groups */}
+          {/* Nested groups first */}
           {parentOrder.map((pid) => (
             <div key={pid}>
               <div className="px-3 pt-2 pb-1 text-[11px] font-bold uppercase tracking-wide text-ink/40">
@@ -104,6 +108,12 @@ export default function MinistryPicker({
                   onPick={() => { onChange(g.id); setOpen(false); }} />
               ))}
             </div>
+          ))}
+
+          {/* Standalone (top-level) ministries */}
+          {standalone.map((g) => (
+            <Row key={g.id} g={g} selected={g.id === value}
+              onPick={() => { onChange(g.id); setOpen(false); }} />
           ))}
 
           {standalone.length === 0 && parentOrder.length === 0 && (
