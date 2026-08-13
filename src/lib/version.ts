@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.40";
+export const CURRENT_VERSION = "1.41";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.41",
+    date: "August 12, 2026",
+    changes: [
+      { type: "fix", text: "Fixed \"Mark resolved\" on the Feedback inbox. Items now actually move to resolved instead of silently staying open, and the inbox shows an error message if an update can't be saved." },
+    ],
+  },
   {
     version: "1.40",
     date: "August 12, 2026",

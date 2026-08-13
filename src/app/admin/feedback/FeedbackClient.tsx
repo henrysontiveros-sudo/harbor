@@ -42,24 +42,30 @@ export default function FeedbackClient({ initial }: { initial: FeedbackItem[] })
   const [items, setItems] = useState<FeedbackItem[]>(initial);
   const [showResolved, setShowResolved] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   const openCount = items.filter((f) => !isResolved(f.status)).length;
   const visible = showResolved ? items : items.filter((f) => !isResolved(f.status));
 
   async function setResolved(id: string, resolved: boolean) {
     setBusyId(id);
+    setErr(null);
     try {
       const res = await fetch(`/api/admin/feedback/${id}/resolve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resolved }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setItems((prev) =>
           prev.map((f) => (f.id === id ? { ...f, status: data.status } : f))
         );
+      } else {
+        setErr(data.error ?? "Couldn't update this item. Please try again.");
       }
+    } catch {
+      setErr("Network error. Please try again.");
     } finally {
       setBusyId(null);
     }
@@ -82,6 +88,10 @@ export default function FeedbackClient({ initial }: { initial: FeedbackItem[] })
           {showResolved ? "Hide resolved" : "Show resolved"}
         </button>
       </div>
+
+      {err && (
+        <p className="text-sm text-coral mb-3">{err}</p>
+      )}
 
       {visible.length === 0 ? (
         <div className="card p-8 text-center text-ink/40">
