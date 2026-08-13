@@ -4,6 +4,7 @@ import "./globals.css";
 import VersionBadge from "@/components/VersionBadge";
 import FeedbackButton from "@/components/FeedbackButton";
 import SwellworksCredit from "@/components/SwellworksCredit";
+import SwellworksPrintCredit from "@/components/SwellworksPrintCredit";
 
 const gotham = localFont({
   src: [
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased bg-[#F7F9FB] text-ink min-h-screen pb-16 print:pb-0">
         {children}
         <SwellworksCredit />
+        <SwellworksPrintCredit />
         <VersionBadge />
         <FeedbackButton />
       </body>

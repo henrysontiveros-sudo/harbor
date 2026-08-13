@@ -1,4 +1,4 @@
-export const CURRENT_VERSION = "1.39";
+export const CURRENT_VERSION = "1.40";
 
 export type ChangeType = "feature" | "improvement" | "fix" | "security";
 
@@ -37,6 +37,13 @@ export function sortedChangelog(): VersionEntry[] {
 }
 
 export const CHANGELOG: VersionEntry[] = [
+  {
+    version: "1.40",
+    date: "August 12, 2026",
+    changes: [
+      { type: "improvement", text: "Printed pages (the Setup Sheet and anything else printed from Harbor) now carry a small \"Built by Swellworks\" credit with the Swellworks swell mark at the bottom of the page." },
+    ],
+  },
   {
     version: "1.39",
     date: "August 12, 2026",
